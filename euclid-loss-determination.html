@@ -1,0 +1,1953 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Euclid Labs · Loss Determination Console</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+:root{
+  --navy-900:#0B1B33;
+  --navy-700:#12325C;
+  --navy-500:#1F4E8C;
+  --navy-200:#C3D3E6;
+  --gray-50:#F7F8FA;
+  --gray-100:#EDEFF3;
+  --gray-300:#D3D8E0;
+  --gray-500:#6B7684;
+  --ink:#101418;
+  --white:#FFFFFF;
+  --burn:#A33A28;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--gray-50);
+  color:var(--ink);
+  font-family:'Archivo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:13px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'IBM Plex Mono','SFMono-Regular',Menlo,monospace;font-variant-numeric:tabular-nums;}
+.serif{font-family:'Source Serif 4',Georgia,serif;font-weight:400;}
+
+.lbl{
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--gray-500);
+}
+
+/* ---------- shell ---------- */
+.shell{max-width:1480px;margin:0 auto;padding:22px 26px 64px;}
+
+.topbar{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:32px;
+  padding-bottom:14px;margin-bottom:20px;
+  border-bottom:1px solid var(--gray-300);
+}
+.brand{display:flex;align-items:baseline;gap:12px;}
+.brand .mark{
+  font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--navy-900);
+}
+.brand .rule{width:1px;height:14px;background:var(--gray-300);display:inline-block;}
+.brand .sub{font-size:12px;font-weight:500;color:var(--gray-500);letter-spacing:.02em;}
+.risk-select{display:flex;align-items:center;gap:10px;}
+.risk-select select{appearance:auto;min-width:390px;border:1px solid var(--gray-300);border-radius:2px;
+  background:var(--white);color:var(--navy-900);padding:7px 10px;font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;font-weight:500;}
+
+/* ---------- cards ---------- */
+.tile{
+  background:var(--white);
+  border:1px solid var(--gray-300);
+  border-radius:2px;
+  box-shadow:0 1px 2px rgba(11,27,51,.04);
+  margin-bottom:20px;
+}
+.tile-hd{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  padding:13px 16px;
+  border-bottom:1px solid var(--gray-300);
+}
+.tile-hd .left{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
+.tile-title{
+  font-size:12px;font-weight:600;letter-spacing:.10em;text-transform:uppercase;color:var(--navy-900);
+}
+.tile-index{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gray-500);
+  border:1px solid var(--gray-300);border-radius:2px;padding:1px 5px;
+}
+.tile-hd .right{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+
+/* segmented control */
+.seg{display:inline-flex;border:1px solid var(--gray-300);border-radius:2px;overflow:hidden;}
+.seg button{
+  appearance:none;border:0;background:var(--white);cursor:pointer;
+  font-family:'Archivo',sans-serif;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--gray-500);padding:6px 14px;transition:background .12s,color .12s;
+}
+.seg button + button{border-left:1px solid var(--gray-300);}
+.seg button:hover{background:var(--gray-50);color:var(--navy-700);}
+.seg button[aria-pressed="true"]{background:var(--navy-500);color:var(--white);}
+
+.res-readout{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;color:var(--navy-900);
+  background:var(--gray-100);border:1px solid var(--gray-300);border-radius:2px;
+  padding:4px 10px;letter-spacing:.01em;white-space:nowrap;
+}
+.res-readout .dim{color:var(--gray-500);font-weight:400;}
+
+/* ---------- tile 1 body ---------- */
+.map-wrap{display:grid;grid-template-columns:1fr 336px;}
+.map-col{position:relative;border-right:1px solid var(--gray-300);}
+#map{height:640px;width:100%;background:var(--gray-100);}
+#gridcanvas{position:absolute;left:0;top:0;pointer-events:none;}
+
+.leaflet-container{font-family:'Archivo',sans-serif;background:var(--gray-100);}
+.leaflet-control-attribution{
+  font-family:'IBM Plex Mono',monospace!important;font-size:9px!important;
+  background:rgba(255,255,255,.88)!important;color:var(--gray-500)!important;
+  border-top-left-radius:2px;
+}
+.leaflet-control-attribution a{color:var(--navy-500)!important;}
+.leaflet-bar a{border-radius:0!important;color:var(--navy-700)!important;}
+.leaflet-bar{border-radius:2px!important;border:1px solid var(--gray-300)!important;box-shadow:none!important;}
+
+.feat-label{
+  font-family:'Archivo',sans-serif;font-size:10.5px;font-weight:500;
+  color:var(--navy-900);white-space:nowrap;letter-spacing:.03em;
+  text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 6px #fff,0 1px 0 #fff;
+  pointer-events:none;
+}
+.feat-label.open{color:var(--gray-500);font-style:italic;}
+.fire-label{
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:500;
+  color:var(--navy-700);white-space:nowrap;letter-spacing:.01em;
+  text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 6px #fff;
+  pointer-events:none;
+}
+
+.legend{
+  position:absolute;left:12px;bottom:26px;z-index:500;
+  background:rgba(255,255,255,.94);border:1px solid var(--gray-300);border-radius:2px;
+  padding:9px 11px 10px;min-width:196px;
+}
+.legend .lbl{display:block;margin-bottom:7px;}
+.ramp{height:9px;border:1px solid var(--gray-300);border-radius:1px;}
+.ramp-ticks{display:flex;justify-content:space-between;margin-top:4px;}
+.ramp-ticks span{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--gray-500);}
+.swatchrow{display:flex;align-items:center;gap:7px;margin-top:6px;}
+.swatch{width:13px;height:11px;border:1px solid var(--gray-300);border-radius:1px;flex:none;}
+.swatchrow span{font-size:10.5px;color:var(--ink);}
+.swatchrow .mono{font-size:10px;color:var(--gray-500);}
+
+.scalebadge{
+  position:absolute;right:12px;top:12px;z-index:500;
+  background:rgba(255,255,255,.94);border:1px solid var(--gray-300);border-radius:2px;
+  padding:6px 9px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--navy-700);
+  text-align:right;line-height:1.5;
+}
+.scalebadge b{font-weight:500;color:var(--navy-900);}
+
+.loading{
+  position:absolute;inset:0;z-index:900;background:rgba(247,248,250,.96);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+}
+.loading .t{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-500);}
+.loading .n{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--navy-700);}
+
+.warnbar{
+  display:none;padding:8px 16px;border-bottom:1px solid var(--gray-300);
+  background:var(--gray-100);font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--navy-700);
+}
+.warnbar.on{display:block;}
+
+/* ---------- inspector ---------- */
+.inspector{padding:0;display:flex;flex-direction:column;min-width:0;}
+.insp-hd{padding:12px 15px 10px;border-bottom:1px solid var(--gray-300);}
+.insp-hd .id{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:var(--navy-900);margin-top:4px;word-break:break-all;}
+.insp-body{padding:2px 15px 15px;overflow-y:auto;max-height:570px;}
+.insp-empty{padding:26px 15px;color:var(--gray-500);font-size:12px;line-height:1.6;}
+.insp-empty .serif{font-size:13.5px;color:var(--ink);display:block;margin-bottom:8px;}
+
+.grp{padding:11px 0 3px;border-bottom:1px solid var(--gray-100);}
+.grp:last-child{border-bottom:0;}
+.grp > .lbl{display:block;margin-bottom:7px;}
+.row{display:flex;justify-content:space-between;gap:12px;padding:3px 0;align-items:baseline;}
+.row .k{font-size:11.5px;color:var(--gray-500);flex:none;}
+.row .v{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink);text-align:right;word-break:break-all;}
+.row .v.strong{color:var(--navy-700);font-weight:500;}
+.row .v.big{font-size:14px;color:var(--navy-700);font-weight:500;}
+
+.chip{
+  display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;
+  letter-spacing:.04em;padding:2px 7px;border-radius:2px;border:1px solid var(--gray-300);
+  background:var(--gray-100);color:var(--navy-700);text-transform:uppercase;
+}
+.chip.burned{background:rgba(163,58,40,.10);border-color:rgba(163,58,40,.42);color:var(--burn);}
+.chip.intact{background:var(--gray-100);border-color:var(--gray-300);color:var(--gray-500);}
+
+.minibar{height:5px;background:var(--gray-100);border:1px solid var(--gray-300);border-radius:1px;overflow:hidden;margin-top:5px;}
+.minibar i{display:block;height:100%;background:var(--navy-500);}
+.minibar i.burn{background:var(--burn);}
+
+/* ---------- event signals tile ---------- */
+.signals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
+.signal{padding:20px 22px 22px;min-height:180px;}
+.signal + .signal{border-left:1px solid var(--gray-300);}
+.signal-name{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--navy-900);margin:5px 0 16px;}
+.signal-primary{font-family:'IBM Plex Mono',monospace;font-size:34px;line-height:1.05;font-weight:500;color:var(--navy-700);margin-bottom:5px;}
+.signal-primary small{font-size:13px;color:var(--gray-500);font-weight:400;}
+.signal-note{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--gray-500);margin-bottom:13px;}
+.signal-rows{border-top:1px solid var(--gray-100);padding-top:7px;}
+.signal-row{display:flex;justify-content:space-between;gap:18px;padding:4px 0;}
+.signal-row .k{font-size:11.5px;color:var(--gray-500);}
+.signal-row .v{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--navy-900);font-weight:500;text-align:right;}
+
+/* ---------- terms and expected loss ---------- */
+.terms-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
+.term{padding:18px 22px 20px;}
+.term + .term{border-left:1px solid var(--gray-300);}
+.term:nth-child(4){border-left:0;}
+.term:nth-child(n+4){border-top:1px solid var(--gray-300);}
+.term .value{font-family:'IBM Plex Mono',monospace;font-size:25px;line-height:1.1;color:var(--navy-700);font-weight:500;margin:8px 0 5px;}
+.term .note{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--gray-500);}
+.el-grid{display:block;}
+.el-summary{padding:22px 24px 24px;border-bottom:1px solid var(--gray-300);background:linear-gradient(180deg,#fff 0%,var(--gray-50) 100%);}
+.el-values{display:grid;grid-template-columns:repeat(3,minmax(180px,280px));gap:42px;margin-top:14px;align-items:start;}
+.el-value .n{font-family:'IBM Plex Mono',monospace;font-size:28px;color:var(--navy-700);font-weight:500;margin:5px 0 3px;}
+.el-value .s{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--gray-500);}
+.el-change{display:inline-block;margin-top:16px;padding:5px 8px;border:1px solid #BCD1C2;background:#F2F7F3;border-radius:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#356346;}
+.el-chart{margin-top:22px;padding-top:16px;border-top:1px solid var(--gray-300);max-width:980px;}
+.el-chart-head{display:flex;justify-content:space-between;gap:20px;align-items:baseline;margin-bottom:8px;}
+.el-chart-head .progress{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--gray-500);}
+.el-chart svg{display:block;width:100%;height:auto;overflow:visible;}
+.el-chart .grid{stroke:var(--gray-300);stroke-width:1;stroke-dasharray:3 4;}
+.el-chart .axis-text{font-family:'IBM Plex Mono',monospace;font-size:9px;fill:var(--gray-500);}
+.el-chart .area{fill:rgba(31,78,140,.08);}
+.el-chart .line{fill:none;stroke:var(--navy-500);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+.el-chart .point{fill:var(--white);stroke:var(--navy-500);stroke-width:1.6;}
+.el-chart .point.current{fill:var(--navy-500);}
+.deal-progress{height:5px;background:var(--gray-100);border:1px solid var(--gray-300);margin-top:7px;max-width:980px;}
+.deal-progress i{display:block;height:100%;width:37.5%;background:var(--navy-500);}
+.development{padding:22px 24px 24px;}
+.development-list{display:block;margin-top:9px;border-top:1px solid var(--gray-100);}
+.development-item{padding:16px 0 4px;max-width:1040px;}
+.development-item + .development-item{border-left:0;border-top:1px solid var(--gray-300);padding:20px 0 4px;margin-top:16px;}
+.development h3{font-family:'Source Serif 4',Georgia,serif;font-size:18px;font-weight:600;margin:6px 0 8px;color:var(--navy-900);}
+.development p{font-family:'Source Serif 4',Georgia,serif;font-size:14px;line-height:1.55;margin:0 0 10px;color:var(--ink);max-width:900px;}
+.development a{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--navy-500);text-decoration:none;margin-right:16px;}
+.development a:hover{text-decoration:underline;}
+
+/* ---------- tile 2 ---------- */
+.dmg{padding:0;}
+.headline{
+  display:grid;grid-template-columns:minmax(300px,1.05fr) 2fr;gap:0;
+  border-bottom:1px solid var(--gray-300);
+}
+.headline .big{padding:20px 22px 22px;border-right:1px solid var(--gray-300);}
+.bignum{
+  font-family:'IBM Plex Mono',monospace;font-size:44px;line-height:1.05;font-weight:500;
+  color:var(--navy-700);letter-spacing:-.015em;margin:8px 0 6px;
+}
+.bigsub{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gray-500);}
+.bigtags{margin-top:14px;display:flex;gap:7px;flex-wrap:wrap;}
+.damage-formula{margin-top:14px;padding-top:12px;border-top:1px solid var(--gray-100);}
+.formula-line{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--navy-700);line-height:1.65;}
+.formula-line .op{color:var(--gray-500);}
+.formula-parts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.formula-part{border:1px solid var(--gray-300);background:var(--gray-50);border-radius:2px;padding:5px 8px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gray-500);}
+.formula-part b{color:var(--navy-900);font-weight:500;}
+
+.chain{padding:16px 22px 18px;}
+.chain table{width:100%;border-collapse:collapse;}
+.chain td{padding:5px 0;vertical-align:baseline;}
+.chain td.op{
+  width:22px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--navy-500);text-align:center;
+}
+.chain td.step{width:26px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gray-500);}
+.chain td.desc{font-size:12px;color:var(--ink);}
+.chain td.desc small{display:block;font-size:10.5px;color:var(--gray-500);margin-top:1px;}
+.chain td.val{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;text-align:right;color:var(--navy-900);white-space:nowrap;
+}
+.chain tr.total td{border-top:1px solid var(--navy-900);padding-top:9px;}
+.chain tr.total td.val{font-size:15px;font-weight:500;color:var(--navy-700);}
+.chain tr.rule td{border-top:1px solid var(--gray-300);padding-top:8px;}
+
+.panels{display:grid;grid-template-columns:1.35fr 1fr;}
+.panel{padding:16px 22px 20px;}
+.panel + .panel{border-left:1px solid var(--gray-300);}
+.panel > .lbl{display:block;margin-bottom:11px;}
+
+table.data{width:100%;border-collapse:collapse;}
+table.data th{
+  font-size:9.5px;font-weight:500;letter-spacing:.10em;text-transform:uppercase;color:var(--gray-500);
+  text-align:right;padding:0 0 6px;border-bottom:1px solid var(--gray-300);white-space:nowrap;
+}
+table.data th:first-child{text-align:left;}
+table.data td{
+  font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-align:right;padding:6px 0;
+  border-bottom:1px solid var(--gray-100);color:var(--ink);white-space:nowrap;
+}
+table.data td:first-child{
+  text-align:left;font-family:'Archivo',sans-serif;font-size:11.5px;color:var(--ink);white-space:normal;
+}
+table.data td + td{padding-left:14px;}
+table.data tr.sum td{border-top:1px solid var(--navy-900);border-bottom:0;font-weight:500;color:var(--navy-700);padding-top:8px;}
+table.data tr.sum td:first-child{font-weight:600;}
+.sw{display:inline-block;width:9px;height:9px;border:1px solid var(--gray-300);border-radius:1px;margin-right:7px;vertical-align:baseline;}
+
+.dinsrow{display:grid;grid-template-columns:1fr 62px 78px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--gray-100);}
+.dinsrow .nm{font-size:11.5px;}
+.dinsrow .nm small{display:block;color:var(--gray-500);font-size:10px;font-family:'IBM Plex Mono',monospace;}
+.dinsrow .ct,.dinsrow .ls{font-family:'IBM Plex Mono',monospace;font-size:11.5px;text-align:right;}
+.dinsbar{height:4px;background:var(--gray-100);margin-top:4px;border-radius:1px;overflow:hidden;}
+.dinsbar i{display:block;height:100%;}
+
+.trigger{padding:18px 22px 22px;border-top:1px solid var(--gray-300);}
+.tgwrap{margin-top:14px;}
+.tgtrack{
+  position:relative;height:34px;background:var(--gray-100);border:1px solid var(--gray-300);border-radius:2px;overflow:hidden;
+}
+.tgtrack .att{position:absolute;top:0;bottom:0;left:0;background:repeating-linear-gradient(135deg,#EDEFF3 0 6px,#E4E7ED 6px 12px);}
+.tgtrack .lay{position:absolute;top:0;bottom:0;background:var(--navy-200);}
+.tgtrack .pay{position:absolute;top:0;bottom:0;background:var(--navy-500);}
+.tgtrack .mark{position:absolute;top:-4px;bottom:-4px;width:1px;background:var(--navy-900);}
+.tgticks{position:relative;height:34px;margin-top:3px;}
+.tgticks .tk{position:absolute;transform:translateX(-50%);text-align:center;}
+.tgticks .tk .n{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--navy-900);display:block;}
+.tgticks .tk .c{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--gray-500);display:block;}
+.tgticks .tk.l{transform:translateX(0);text-align:left;}
+.tgticks .tk.r{transform:translateX(-100%);text-align:right;}
+
+.prose{
+  padding:18px 22px 24px;border-top:1px solid var(--gray-300);background:var(--gray-50);
+  display:grid;grid-template-columns:1.6fr 1fr;gap:30px;
+}
+.prose p{font-family:'Source Serif 4',Georgia,serif;font-weight:400;font-size:14.5px;line-height:1.62;color:var(--ink);margin:0 0 11px;}
+.prose p:last-child{margin-bottom:0;}
+.prose .mono{font-size:13px;color:var(--navy-700);}
+.recon{border:1px solid var(--gray-300);background:var(--white);border-radius:2px;padding:12px 14px;height:fit-content;}
+.recon .rr{display:flex;justify-content:space-between;gap:14px;padding:4px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+.recon .rr .k{color:var(--gray-500);font-family:'Archivo',sans-serif;font-size:11px;}
+.recon .ok{color:var(--navy-700);font-weight:500;}
+
+.selcontrib{border-top:1px solid var(--gray-300);padding:12px 22px;display:flex;gap:34px;flex-wrap:wrap;align-items:baseline;}
+.selcontrib .kv{display:flex;flex-direction:column;gap:2px;}
+.selcontrib .kv .v{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--navy-700);font-weight:500;}
+
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gray-500);
+  border-top:1px solid var(--gray-300);padding-top:12px;margin-top:4px;}
+
+@media (max-width:1100px){
+  .map-wrap{grid-template-columns:1fr;}
+  .map-col{border-right:0;border-bottom:1px solid var(--gray-300);}
+  .insp-body{max-height:none;}
+  .headline{grid-template-columns:1fr;}
+  .headline .big{border-right:0;border-bottom:1px solid var(--gray-300);}
+  .panels{grid-template-columns:1fr;}
+  .panel + .panel{border-left:0;border-top:1px solid var(--gray-300);}
+  .prose{grid-template-columns:1fr;gap:18px;}
+  .signals{grid-template-columns:1fr;}
+  .signal + .signal{border-left:0;border-top:1px solid var(--gray-300);}
+  .terms-grid{grid-template-columns:1fr 1fr;}
+  .term:nth-child(n){border-left:1px solid var(--gray-300);border-top:0;}
+  .term:nth-child(odd){border-left:0;}
+  .term:nth-child(n+3){border-top:1px solid var(--gray-300);}
+  .el-values{grid-template-columns:1fr;gap:16px;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="mark">Euclid&nbsp;Labs</span>
+      <span class="rule"></span>
+      <span class="sub">Parametric Wildfire · Loss Determination Console</span>
+    </div>
+    <div class="risk-select">
+      <label class="lbl" for="risk-note">Structured risk note</label>
+      <select id="risk-note">
+        <option value="srn1">SRN 1 · Treaty · TRTY-CAWF-2026-01</option>
+        <option value="srn2">SRN 2 · Treaty · TRTY-CAWF-2026-02</option>
+        <option value="srn3">SRN 3 · Treaty · TRTY-CAWF-2026-03</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ============ TILE 1 ============ -->
+  <section class="tile">
+    <div class="tile-hd">
+      <div class="left">
+        <span class="tile-index mono">01</span>
+        <span class="tile-title">Structured risk note terms</span>
+        <span class="lbl" id="terms-id">SRN 1 · TRTY-CAWF-2026-01</span>
+      </div>
+    </div>
+    <div class="terms-grid">
+      <div class="term"><span class="lbl">Attachment point</span><div class="value" id="term-attach">—</div><div class="note">per occurrence</div></div>
+      <div class="term"><span class="lbl">Limit</span><div class="value" id="term-limit">—</div><div class="note">single-event principal at risk</div></div>
+      <div class="term"><span class="lbl">Collateral yield</span><div class="value" id="term-collateral">—</div><div class="note">reference collateral return</div></div>
+      <div class="term"><span class="lbl">Insurance risk spread</span><div class="value" id="term-spread">—</div><div class="note">expected loss + investor risk margin</div></div>
+      <div class="term"><span class="lbl">Total return</span><div class="value" id="term-return">—</div><div class="note">collateral yield + risk spread</div></div>
+      <div class="term"><span class="lbl" id="term-last-label">Claims damages paid out</span><div class="value" id="term-claims">—</div><div class="note" id="term-last-note">linked to modeled damage value</div></div>
+    </div>
+  </section>
+
+  <!-- ============ TILE 2 ============ -->
+  <section class="tile">
+    <div class="tile-hd">
+      <div class="left">
+        <span class="tile-index mono">02</span>
+        <span class="tile-title">Current expected loss</span>
+        <span class="lbl">August 2026 · Updated risk view</span>
+      </div>
+    </div>
+    <div class="el-grid">
+      <div class="el-summary">
+        <span class="lbl">Expected loss comparison</span>
+        <div class="el-values">
+          <div class="el-value"><span class="lbl">At underwriting</span><div class="n" id="el-original">—</div><div class="s">percentage of limit</div></div>
+          <div class="el-value"><span class="lbl">Current expected loss</span><div class="n" id="el-current">—</div><div class="s">percentage of limit · August 2026</div></div>
+          <div class="el-value"><span class="lbl">Model vendor</span><div class="n" style="font-size:20px">Verisk</div><div class="s">Wildfire Model for the U.S. v4.0.0<br>last updated August 28, 2026</div></div>
+        </div>
+        <div class="el-chart">
+          <div class="el-chart-head"><span class="lbl">Expected loss history · monthly</span><span class="progress">month 9 of 24 · 15 months remaining</span></div>
+          <svg id="el-chart-svg" viewBox="0 0 900 190" role="img" aria-label="Monthly expected loss history"></svg>
+          <div class="deal-progress" aria-hidden="true"><i></i></div>
+        </div>
+        <div class="el-change" id="el-change">—</div>
+      </div>
+      <div class="development">
+        <span class="lbl">Recent development affecting expected loss</span>
+        <div class="development-list">
+          <article class="development-item">
+            <h3 id="dev-one-title">Berkeley Hills wildfire mitigation and fuel reduction</h3>
+            <p id="dev-one-copy">Berkeley programs support defensible-space work, vegetation removal, chipping, home hardening, and eucalyptus understory cleanup. East Bay Regional Park District’s 2026 Tilden projects add eucalyptus, brush, and woody-debris removal near the wildland–urban edge.</p>
+            <p id="mitigation-impact">The model treats these measures as reducing expected loss.</p>
+            <a href="https://berkeleyca.gov/safety-health/fire/understand-wildfire-risk-berkeley-hills" target="_blank" rel="noopener">City wildfire programs ↗</a>
+            <a href="https://www.ebparks.org/public-safety/fire/fuels-management/tilden-2026-major-fuels-reduction-projects" target="_blank" rel="noopener">Tilden fuels projects ↗</a>
+          </article>
+          <article class="development-item">
+            <h3 id="dev-two-title">Unusually dry and high-wind summer increases wildfire risk</h3>
+            <p id="dev-two-copy">Hot, critically dry conditions and recurring breezy periods have elevated fire-weather risk across the interior East Bay and its higher terrain. The model also includes an El Niño-linked warm-ocean scenario as an added temperature and fuel-moisture stress signal.</p>
+            <p id="weather-impact">The weather adjustment partially offsets the benefit from mitigation work.</p>
+            <a href="https://forecast.weather.gov/product.php?format=CI&amp;glossary=1&amp;issuedby=MTR&amp;product=AFD&amp;site=MOB&amp;version=2" target="_blank" rel="noopener">NWS Bay Area fire weather ↗</a>
+            <a href="https://www.integratedecosystemassessment.noaa.gov/regions/california-current/california-current-ocean-assessment-status-takeaways-c-coast" target="_blank" rel="noopener">NOAA El Niño update ↗</a>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TILE 3 ============ -->
+  <section class="tile">
+    <div class="tile-hd">
+      <div class="left">
+        <span class="tile-index mono">03</span>
+        <span class="tile-title" id="portfolio-title">FAIR Plan exposure</span>
+        <span class="lbl" id="portfolio-subtitle">SRN 1 · Selected homes in the deeper Berkeley Hills</span>
+      </div>
+      <div class="right">
+        <span class="res-readout" id="res-readout">grid <b>—</b> <span class="dim">· analysis 5 m</span></span>
+        <div class="seg" role="group" aria-label="Map overlay">
+          <button id="btn-burn" aria-pressed="false">Burn overlay</button>
+        </div>
+      </div>
+    </div>
+    <div class="warnbar" id="warnbar"></div>
+    <div class="map-wrap">
+      <div class="map-col">
+        <div id="map"></div>
+        <canvas id="gridcanvas"></canvas>
+        <div class="scalebadge" id="scalebadge">—</div>
+        <div class="legend" id="legend"></div>
+        <div class="loading" id="loading">
+          <div class="t">Estimating FAIR Plan exposure</div>
+          <div class="n" id="loadmsg">initialising…</div>
+        </div>
+      </div>
+      <aside class="inspector">
+        <div class="insp-hd">
+          <span class="lbl">Cell inspector</span>
+          <div class="id mono" id="insp-id">no cell selected</div>
+        </div>
+        <div class="insp-body" id="insp-body">
+          <div class="insp-empty">
+            <span class="serif">Click any cell to inspect it.</span>
+            The inspector reports the selected cell's estimated exposure, simple burn
+            state, and provenance. Zoom in to subdivide toward the 5 m analysis resolution.
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ TILE 4 ============ -->
+  <section class="tile">
+    <div class="tile-hd">
+      <div class="left">
+        <span class="tile-index mono">04</span>
+        <span class="tile-title">Fire event signals</span>
+        <span class="lbl" id="signals-note">SRN 1 · Property sensing and response telemetry</span>
+      </div>
+    </div>
+    <div class="signals">
+      <div class="signal">
+        <span class="lbl">Metric 01</span>
+        <div class="signal-name">Fire detection</div>
+        <div class="signal-primary" id="sig-detection">—</div>
+        <div class="signal-note">on-property IoT fire detected</div>
+        <div class="signal-rows">
+          <div class="signal-row"><span class="k">Reporting properties</span><span class="v" id="sig-reporting">—</span></div>
+          <div class="signal-row"><span class="k">Median alert latency</span><span class="v" id="sig-latency">—</span></div>
+        </div>
+      </div>
+      <div class="signal">
+        <span class="lbl">Metric 02</span>
+        <div class="signal-name">Fire response</div>
+        <div class="signal-primary" id="sig-water">—</div>
+        <div class="signal-note">water deployed</div>
+        <div class="signal-rows">
+          <div class="signal-row"><span class="k">Fire stations activated</span><span class="v" id="sig-stations">—</span></div>
+          <div class="signal-row"><span class="k">Engine companies</span><span class="v" id="sig-engines">—</span></div>
+          <div class="signal-row"><span class="k">First-unit arrival</span><span class="v" id="sig-arrival">—</span></div>
+          <div class="signal-row"><span class="k">Aerial drops</span><span class="v" id="sig-drops">—</span></div>
+        </div>
+      </div>
+      <div class="signal">
+        <span class="lbl">Metric 03</span>
+        <div class="signal-name">Fire severity</div>
+        <div class="signal-primary" id="sig-smoke">—</div>
+        <div class="signal-note">peak smoke density · PM2.5</div>
+        <div class="signal-rows">
+          <div class="signal-row"><span class="k">Smoke density</span><span class="v" id="sig-smoke-row">—</span></div>
+          <div class="signal-row"><span class="k">Peak heat radiation</span><span class="v" id="sig-heat">—</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TILE 5 ============ -->
+  <section class="tile dmg">
+    <div class="tile-hd">
+      <div class="left">
+        <span class="tile-index mono">05</span>
+        <span class="tile-title">Modeled damage value</span>
+      </div>
+    </div>
+
+    <div class="headline" style="display:block;border-bottom:0">
+      <div class="big">
+        <span class="lbl">Modeled damage value</span>
+        <div class="bignum" id="hd-loss">—</div>
+        <div class="damage-formula">
+          <div class="formula-line" id="damage-formula">—</div>
+          <div class="formula-parts" id="damage-parts"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span id="foot-l">—</span>
+    <span id="foot-r">Synthetic portfolio estimate and event data · values and burn footprint are generated, not observed · wireframe for structural review only</span>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+"use strict";
+/* =========================================================================
+   EUCLID LABS — PARAMETRIC WILDFIRE LOSS DETERMINATION CONSOLE
+   Single-file wireframe. All data is synthetic and generated procedurally
+   from one seed (mulberry32 + value-noise hashes) so every run is identical.
+
+   INTERNAL CONSISTENCY CONTRACT
+   -----------------------------
+   There is exactly one function, evalCell(I,J), that decides what a 5 m
+   analysis cell is: its land class, its frozen insured value, whether it
+   burned, and its damage ratio. That function is called once per cell during
+   generation to build the block aggregates and the headline loss number, and
+   it is called again at render/inspect time when the display resolution is
+   5 m. The number in tile 02 is therefore literally the sum over the cells
+   drawn in tile 01 — nothing is computed twice by two different rules.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------- seed */
+const SEED = 0x45554331;                       // "EUC1"
+const SEED_HEX = '0x' + SEED.toString(16).toUpperCase();
+const RISK_KEY = location.hash === '#srn3' ? 'srn3' : location.hash === '#srn2' ? 'srn2' : 'srn1';
+const PORTFOLIO = RISK_KEY === 'srn3'
+  ? { key:'srn3', note:'SRN 3', treaty:'TRTY-CAWF-2026-03', carrier:'Marin residential', sample:'22%',
+      attachment:20e6, limit:25e6, collateral:'3.75%', spread:'10.25%', totalReturn:'14.00%', uwEL:550e3, currentEL:662.5e3,
+      elHistory:[2.20,2.18,2.24,2.29,2.35,2.41,2.48,2.56,2.65] }
+  : RISK_KEY === 'srn2'
+  ? { key:'srn2', note:'SRN 2', treaty:'TRTY-CAWF-2026-02', carrier:'State Farm', sample:'18%',
+      attachment:9e6, limit:30e6, collateral:'3.75%', spread:'15.75%', totalReturn:'19.50%', uwEL:1.122e6, currentEL:1.044e6,
+      elHistory:[3.74,3.69,3.77,3.62,3.58,3.44,3.51,3.55,3.48] }
+  : { key:'srn1', note:'SRN 1', treaty:'TRTY-CAWF-2026-01', carrier:'FAIR Plan', sample:'20%',
+      attachment:30e6, limit:35e6, collateral:'3.75%', spread:'5.65%', totalReturn:'9.40%', uwEL:385e3, currentEL:350e3,
+      elHistory:[1.10,1.08,1.12,1.07,1.04,0.98,1.02,1.03,1.00] };
+
+function mulberry32(a){
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hash2i(x, y, s){
+  let h = (s ^ Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263)) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+function vnoise(x, y, s){
+  const xi = Math.floor(x), yi = Math.floor(y);
+  const xf = x - xi, yf = y - yi;
+  const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+  const a = hash2i(xi, yi, s),     b = hash2i(xi + 1, yi, s);
+  const c = hash2i(xi, yi + 1, s), d = hash2i(xi + 1, yi + 1, s);
+  return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
+function fbm(x, y, s, oct){
+  let sum = 0, amp = 0.5, f = 1, norm = 0;
+  for (let o = 0; o < (oct || 4); o++){
+    sum += amp * vnoise(x * f, y * f, s + o * 1013);
+    norm += amp; f *= 2; amp *= 0.5;
+  }
+  return sum / norm;
+}
+const S_RIDGE = SEED ^ 0x11, S_HILLW = SEED ^ 0x12, S_WARP = SEED ^ 0x13,
+      S_DENS  = SEED ^ 0x14, S_FUEL  = SEED ^ 0x15, S_INT  = SEED ^ 0x16,
+      S_HARD  = SEED ^ 0x17, S_JIT   = SEED ^ 0x18, S_SLOPE= SEED ^ 0x19,
+      S_SCAR  = SEED ^ 0x1A, S_RES   = SEED ^ 0x1B, S_FAIR = SEED ^ 0x1C;
+
+/* --------------------------------------------------------------- extent */
+const BBOX = PORTFOLIO.key === 'srn3'
+  ? { s:37.8820, w:-122.5900, n:37.9420, e:-122.5000 }
+  : { s:37.8460, w:-122.3150, n:37.9400, e:-122.2000 };
+const LAT0 = (BBOX.s + BBOX.n) / 2;
+const M_LAT = 111320;
+const M_LON = 111320 * Math.cos(LAT0 * Math.PI / 180);
+const W_M = (BBOX.e - BBOX.w) * M_LON;
+const H_M = (BBOX.n - BBOX.s) * M_LAT;
+
+const A_RES = 5, B_RES = 25, SUB = B_RES / A_RES;      // 5 sub-cells per block side
+const NBX = Math.floor(W_M / B_RES), NBY = Math.floor(H_M / B_RES);
+const NB  = NBX * NBY;
+const NAX = NBX * SUB, NAY = NBY * SUB;
+const N_ANALYSIS = NAX * NAY;
+
+const lonOfX = x => BBOX.w + x / M_LON;
+const latOfY = y => BBOX.s + y / M_LAT;
+const xOfLon = lo => (lo - BBOX.w) * M_LON;
+const yOfLat = la => (la - BBOX.s) * M_LAT;
+
+/* ------------------------------------------------------------- classes */
+const C_OPEN = 0, C_HILL = 1, C_FLAT = 2, C_COMM = 3, C_STREET = 4, C_WATER = 5;
+const CLASS_NAME = ['Open space', 'Hill WUI', 'Flatland residential', 'Commercial', 'Street', 'Water'];
+const CLASS_SHORT = ['OPEN', 'HILL-WUI', 'FLAT-RES', 'COMM', 'STREET', 'WATER'];
+// frozen insured value density, $ per 5 m analysis cell (25 m² of ground)
+const BASE_DENSITY = [0, 38000, 30000, 34000, 0, 0];
+// published damage function base ratios, DF-CA-WF v2.1
+const DF_BASE = [0, 0.86, 0.70, 0.58, 0, 0];
+
+/* ------------------------------------------------------------ polygons */
+const TILDEN = [[37.8762,-122.2452],[37.8802,-122.2336],[37.8892,-122.2288],[37.8996,-122.2312],
+                [37.9078,-122.2384],[37.9118,-122.2498],[37.9052,-122.2560],[37.8972,-122.2520],
+                [37.8898,-122.2472],[37.8828,-122.2486],[37.8784,-122.2506]];
+const WILDCAT = [[37.9128,-122.2618],[37.9200,-122.2520],[37.9318,-122.2560],[37.9400,-122.2678],
+                 [37.9400,-122.2902],[37.9302,-122.2950],[37.9202,-122.2862],[37.9140,-122.2738]];
+const POCKET_CLAREMONT = [[37.8516,-122.2418],[37.8562,-122.2338],[37.8646,-122.2316],
+                          [37.8706,-122.2348],[37.8722,-122.2420],[37.8642,-122.2442]];
+const POCKET_KENSINGTON = [[37.8982,-122.2678],[37.9042,-122.2618],[37.9142,-122.2648],
+                           [37.9192,-122.2758],[37.9160,-122.2902],[37.9058,-122.2932],
+                           [37.8988,-122.2848]];
+// 1991 Tunnel Fire perimeter, the anchoring historical footprint
+const TUNNEL_1991 = [[37.8558,-122.2418],[37.8570,-122.2302],[37.8618,-122.2214],[37.8692,-122.2222],
+                     [37.8722,-122.2318],[37.8700,-122.2398],[37.8652,-122.2446],[37.8600,-122.2452]];
+// control ring for the simulated 2026 event: reburns the 1991 footprint and
+// runs north up the Grizzly Peak ridge under an offshore wind
+const SCAR_CTRL = [[37.8528,-122.2382],[37.8562,-122.2252],[37.8642,-122.2228],[37.8722,-122.2270],
+                   [37.8802,-122.2302],[37.8880,-122.2330],[37.8942,-122.2420],[37.8898,-122.2532],
+                   [37.8818,-122.2562],[37.8742,-122.2520],[37.8682,-122.2470],[37.8620,-122.2500],
+                   [37.8570,-122.2468]];
+const SHORE = [[37.8460,-122.3006],[37.8550,-122.3052],[37.8620,-122.3122],[37.8680,-122.3168],
+               [37.8740,-122.3150],[37.8800,-122.3112],[37.8880,-122.3086],[37.8960,-122.3048],
+               [37.9060,-122.3020],[37.9160,-122.2998],[37.9280,-122.2962],[37.9400,-122.2902]];
+const COMM_STRIPS = [
+  { name:'Solano Ave',   hw:62, pts:[[37.8908,-122.2996],[37.8905,-122.2902],[37.8902,-122.2812],[37.8914,-122.2758]] },
+  { name:'College Ave',  hw:56, pts:[[37.8420,-122.2528],[37.8524,-122.2526],[37.8602,-122.2520],[37.8644,-122.2542]] },
+  { name:'Shattuck Ave', hw:66, pts:[[37.8478,-122.2680],[37.8600,-122.2680],[37.8702,-122.2690],[37.8804,-122.2706]] }
+];
+const FEATURES = PORTFOLIO.key === 'srn3' ? [
+  { n:'Mill Valley',             lat:37.9060, lon:-122.5450, open:false },
+  { n:'Cascade Canyon',          lat:37.9100, lon:-122.5650, open:false },
+  { n:'Blithedale Canyon',       lat:37.9200, lon:-122.5530, open:false },
+  { n:'Mount Tamalpais',         lat:37.9230, lon:-122.5850, open:true  },
+  { n:'Alto',                    lat:37.9000, lon:-122.5200, open:false },
+  { n:'Camino Alto Preserve',    lat:37.9150, lon:-122.5300, open:true  }
+] : [
+  { n:'Elmwood',                lat:37.8570, lon:-122.2540, open:false },
+  { n:'Claremont Canyon',       lat:37.8620, lon:-122.2400, open:false },
+  { n:'Panoramic Hill',         lat:37.8660, lon:-122.2380, open:false },
+  { n:'Grizzly Peak ridge',     lat:37.8850, lon:-122.2380, open:true  },
+  { n:'Cragmont',               lat:37.8880, lon:-122.2570, open:false },
+  { n:'Tilden Regional Park',   lat:37.8950, lon:-122.2420, open:true  },
+  { n:'Kensington',             lat:37.9070, lon:-122.2790, open:false },
+  { n:'Albany',                 lat:37.8870, lon:-122.2970, open:false },
+  { n:'Wildcat Canyon',         lat:37.9280, lon:-122.2740, open:true  }
+];
+
+function pip(la, lo, poly){
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++){
+    const yi = poly[i][0], xi = poly[i][1], yj = poly[j][0], xj = poly[j][1];
+    if (((yi > la) !== (yj > la)) && (lo < (xj - xi) * (la - yi) / (yj - yi) + xi)) inside = !inside;
+  }
+  return inside;
+}
+function polyBBox(p){
+  let s = 90, n = -90, w = 180, e = -180;
+  for (const q of p){ if (q[0] < s) s = q[0]; if (q[0] > n) n = q[0]; if (q[1] < w) w = q[1]; if (q[1] > e) e = q[1]; }
+  return { s, n, w, e };
+}
+function segDistM(la, lo, a, b){
+  const px = xOfLon(lo), py = yOfLat(la);
+  const ax = xOfLon(a[1]), ay = yOfLat(a[0]), bx = xOfLon(b[1]), by = yOfLat(b[0]);
+  const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+  let t = L2 ? ((px - ax) * dx + (py - ay) * dy) / L2 : 0;
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  const cx = ax + t * dx, cy = ay + t * dy;
+  return Math.hypot(px - cx, py - cy);
+}
+function polylineDistM(la, lo, pts){
+  let d = Infinity;
+  for (let i = 0; i < pts.length - 1; i++) d = Math.min(d, segDistM(la, lo, pts[i], pts[i + 1]));
+  return d;
+}
+function shoreLonAt(la){
+  for (let i = 0; i < SHORE.length - 1; i++){
+    const a = SHORE[i], b = SHORE[i + 1];
+    if (la >= a[0] && la <= b[0]){
+      const t = (la - a[0]) / (b[0] - a[0]);
+      return a[1] + t * (b[1] - a[1]);
+    }
+  }
+  return la < SHORE[0][0] ? SHORE[0][1] : SHORE[SHORE.length - 1][1];
+}
+
+/* ---- ragged ring: Catmull-Rom resample + radial noise, in metre space -- */
+function catmullClosed(ctrl, per){
+  const out = [], n = ctrl.length;
+  for (let i = 0; i < n; i++){
+    const p0 = ctrl[(i - 1 + n) % n], p1 = ctrl[i], p2 = ctrl[(i + 1) % n], p3 = ctrl[(i + 2) % n];
+    for (let k = 0; k < per; k++){
+      const t = k / per, t2 = t * t, t3 = t2 * t;
+      out.push([
+        0.5 * ((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+        0.5 * ((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)
+      ]);
+    }
+  }
+  return out;
+}
+function raggedRing(ctrl, seed, a1, a2, per){
+  const sm = catmullClosed(ctrl, per || 14);
+  let cx = 0, cy = 0;
+  for (const p of sm){ cx += xOfLon(p[1]); cy += yOfLat(p[0]); }
+  cx /= sm.length; cy /= sm.length;
+  return sm.map((p, k) => {
+    const px = xOfLon(p[1]), py = yOfLat(p[0]);
+    const ang = Math.atan2(py - cy, px - cx);
+    const n1 = fbm(Math.cos(ang) * 2.4 + 9, Math.sin(ang) * 2.4 + 9, seed, 4) - 0.5;
+    const n2 = vnoise(k * 0.62, 4.7, seed + 977) - 0.5;
+    const f = 1 + a1 * n1 * 2 + a2 * n2 * 2;
+    return [latOfY(cy + (py - cy) * f), lonOfX(cx + (px - cx) * f)];
+  });
+}
+const SCAR = raggedRing(SCAR_CTRL, S_SCAR, 0.075, 0.030, 16);
+// unburned islands inside the scar (irrigated golf course, reservoir margin,
+// a hardened subdivision that held) and two downwind spot fires
+const ISLANDS = [
+  raggedRing([[37.8676,-122.2352],[37.8700,-122.2312],[37.8676,-122.2276],[37.8646,-122.2306]], S_SCAR ^ 0xA1, 0.16, 0.05, 10),
+  raggedRing([[37.8836,-122.2426],[37.8858,-122.2392],[37.8834,-122.2358],[37.8808,-122.2394]], S_SCAR ^ 0xA2, 0.18, 0.06, 10),
+  raggedRing([[37.8596,-122.2400],[37.8612,-122.2372],[37.8592,-122.2346],[37.8574,-122.2376]], S_SCAR ^ 0xA3, 0.20, 0.06, 10)
+];
+const SPOTS = [
+  raggedRing([[37.8968,-122.2596],[37.8992,-122.2552],[37.8964,-122.2512],[37.8938,-122.2556]], S_SCAR ^ 0xB1, 0.22, 0.07, 10),
+  raggedRing([[37.8748,-122.2606],[37.8768,-122.2568],[37.8744,-122.2534],[37.8722,-122.2572],[37.8726,-122.2596]], S_SCAR ^ 0xB2, 0.22, 0.07, 10),
+  // ember-driven spot ignition down in the flats, across the Solano Ave frontage
+  raggedRing([[37.8880,-122.2902],[37.8918,-122.2856],[37.8896,-122.2790],[37.8862,-122.2842]], S_SCAR ^ 0xB3, 0.20, 0.07, 12)
+];
+
+/* ------------------------------- burn mask, scanline-rasterised at 5 m -- */
+let BM_X0, BM_Y0, BM_W, BM_H, BURNMASK, BURNDIST;
+function buildBurnMask(){
+  if (PORTFOLIO.key === 'srn3'){
+    BM_X0 = 0; BM_Y0 = 0; BM_W = 1; BM_H = 1;
+    BURNMASK = new Uint8Array(1); BURNDIST = new Uint8Array(1);
+    return;
+  }
+  const all = [SCAR].concat(SPOTS);
+  let s = 90, n = -90, w = 180, e = -180;
+  for (const p of all){ const bb = polyBBox(p); s = Math.min(s, bb.s); n = Math.max(n, bb.n); w = Math.min(w, bb.w); e = Math.max(e, bb.e); }
+  BM_X0 = Math.max(0, Math.floor(xOfLon(w) / A_RES) - 2);
+  BM_Y0 = Math.max(0, Math.floor(yOfLat(s) / A_RES) - 2);
+  const x1 = Math.min(NAX - 1, Math.ceil(xOfLon(e) / A_RES) + 2);
+  const y1 = Math.min(NAY - 1, Math.ceil(yOfLat(n) / A_RES) + 2);
+  BM_W = x1 - BM_X0 + 1; BM_H = y1 - BM_Y0 + 1;
+  BURNMASK = new Uint8Array(BM_W * BM_H);
+  rasterInto(SCAR, 1);
+  for (const p of ISLANDS) rasterInto(p, 0);
+  for (const p of SPOTS)   rasterInto(p, 1);
+  buildBurnDist();
+}
+/* Chamfer distance, in 5 m cells, from each burned cell to the nearest
+   unburned cell. Perimeter cells burned at lower residence time and lower
+   intensity, so the damage function attenuates toward the scar edge; this
+   is what populates the lower DINS tiers. Capped at 40 cells (200 m). */
+const PDIST_CAP = 40;
+function buildBurnDist(){
+  BURNDIST = new Uint8Array(BM_W * BM_H);
+  for (let k = 0; k < BURNMASK.length; k++) BURNDIST[k] = BURNMASK[k] ? PDIST_CAP : 0;
+  const at = (x, y) => (x < 0 || y < 0 || x >= BM_W || y >= BM_H) ? 0 : BURNDIST[y * BM_W + x];
+  for (let y = 0; y < BM_H; y++) for (let x = 0; x < BM_W; x++){
+    const k = y * BM_W + x;
+    if (!BURNDIST[k]) continue;
+    let d = BURNDIST[k];
+    d = Math.min(d, at(x-1, y) + 1, at(x, y-1) + 1, at(x-1, y-1) + 1, at(x+1, y-1) + 1);
+    BURNDIST[k] = d;
+  }
+  for (let y = BM_H - 1; y >= 0; y--) for (let x = BM_W - 1; x >= 0; x--){
+    const k = y * BM_W + x;
+    if (!BURNDIST[k]) continue;
+    let d = BURNDIST[k];
+    d = Math.min(d, at(x+1, y) + 1, at(x, y+1) + 1, at(x+1, y+1) + 1, at(x-1, y+1) + 1);
+    BURNDIST[k] = d;
+  }
+}
+function perimDistAt(I, J){
+  const x = I - BM_X0, y = J - BM_Y0;
+  if (x < 0 || y < 0 || x >= BM_W || y >= BM_H) return 0;
+  return BURNDIST[y * BM_W + x];
+}
+function rasterInto(poly, val){
+  const P = poly.map(p => [xOfLon(p[1]) / A_RES, yOfLat(p[0]) / A_RES]);   // [fx, fy]
+  let miny = Infinity, maxy = -Infinity;
+  for (const p of P){ if (p[1] < miny) miny = p[1]; if (p[1] > maxy) maxy = p[1]; }
+  const j0 = Math.max(BM_Y0, Math.floor(miny)), j1 = Math.min(BM_Y0 + BM_H - 1, Math.ceil(maxy));
+  const xs = [];
+  for (let J = j0; J <= j1; J++){
+    const yc = J + 0.5;
+    xs.length = 0;
+    for (let i = 0, k = P.length - 1; i < P.length; k = i++){
+      const y0 = P[k][1], y1 = P[i][1];
+      if ((y0 > yc) !== (y1 > yc)){
+        xs.push(P[k][0] + (yc - y0) / (y1 - y0) * (P[i][0] - P[k][0]));
+      }
+    }
+    if (!xs.length) continue;
+    xs.sort((a, b) => a - b);
+    const row = (J - BM_Y0) * BM_W;
+    for (let s = 0; s + 1 < xs.length; s += 2){
+      let a = Math.ceil(xs[s] - 0.5), b = Math.floor(xs[s + 1] - 0.5);
+      if (a < BM_X0) a = BM_X0;
+      if (b > BM_X0 + BM_W - 1) b = BM_X0 + BM_W - 1;
+      for (let I = a; I <= b; I++) BURNMASK[row + (I - BM_X0)] = val;
+    }
+  }
+}
+function burnedAt(I, J){
+  const x = I - BM_X0, y = J - BM_Y0;
+  if (x < 0 || y < 0 || x >= BM_W || y >= BM_H) return 0;
+  return BURNMASK[y * BM_W + x];
+}
+function burnedAtLatLng(la, lo){
+  const I = Math.floor(xOfLon(lo) / A_RES), J = Math.floor(yOfLat(la) / A_RES);
+  return burnedAt(I, J);
+}
+
+/* --------------------------------------------------- block-level fields */
+const bCls  = new Uint8Array(NB);
+const bDens = new Float32Array(NB);
+const bFuel = new Uint8Array(NB);
+const bSlope= new Uint8Array(NB);
+const bHard = new Uint8Array(NB);
+const bInt  = new Uint8Array(NB);
+const bWX   = new Float32Array(NB);
+const bWY   = new Float32Array(NB);
+const bExp  = new Float64Array(NB);
+const bLoss = new Float64Array(NB);
+const bExpB = new Float64Array(NB);   // insured value inside the burn footprint
+const bNExp = new Uint8Array(NB);
+const bBurn = new Uint8Array(NB);
+const bStruct = new Int32Array(NB).fill(-1);
+
+function classifyAt(la, lo){
+  if (PORTFOLIO.key === 'srn3'){
+    // Mill Valley: developed hillside neighborhoods transition westward
+    // into Mount Tamalpais open space; lower eastern parcels are flatter.
+    if (lo < -122.5740 || (la > 37.9260 && lo < -122.5480)) return C_OPEN;
+    if (lo > -122.5200 && la < 37.9050) return C_FLAT;
+    return C_HILL;
+  }
+  if (lo < shoreLonAt(la)) return C_WATER;
+  if (pip(la, lo, TILDEN) || pip(la, lo, WILDCAT)) return C_OPEN;
+  const inPocket = pip(la, lo, POCKET_CLAREMONT);
+  const ridge = -122.2400 + 0.0042 * (fbm(la * 320, 6.3, S_RIDGE, 3) - 0.5) * 2;
+  if (lo > ridge && !inPocket) return C_OPEN;
+  for (const st of COMM_STRIPS) if (polylineDistM(la, lo, st.pts) < st.hw) return C_COMM;
+  if (inPocket) return C_HILL;
+  if (pip(la, lo, POCKET_KENSINGTON)) return C_HILL;
+  const hillW = -122.2650 + 0.0034 * (fbm(la * 300 + 4.1, 2.9, S_HILLW, 3) - 0.5) * 2;
+  return lo >= hillW ? C_HILL : C_FLAT;
+}
+
+/* ------------------------------------------------- structure inventory */
+const ST = { n:0, id:[], fx:[], fy:[], fw:[], fh:[], cells:[], blk:[], area:[], unit:[],
+             val:[], yr:[], roof:[], defs:[], ir:[], burned:[], loss:[] };
+
+/* ------------------------------------------------------ THE cell rule --
+   evalCell writes into module-level scratch slots (no allocation) so it can
+   be called 4.2 M times during generation and a few thousand times a frame
+   at 5 m display resolution without diverging. */
+let _cls = 0, _val = 0, _burn = 0, _str = -1, _ratio = 0, _street = 0, _pdist = 0;
+function perimFactor(d){ return 0.10 + 0.90 * Math.min(1, (d - 1) / 11); }
+function damageRatio(cls, ir, fuel, inten, res, pdist){
+  const base = DF_BASE[cls];
+  if (!base) return 0;
+  let r = base * (1 - 0.46 * ir) * (0.86 + 0.28 * fuel) * (0.34 + 1.16 * inten)
+              * (0.58 + 0.84 * res) * perimFactor(pdist);
+  return r < 0 ? 0 : r > 0.98 ? 0.98 : r;
+}
+// Exposure is an estimate of FAIR Plan homes, not a continuous housing raster.
+// Restrict the pool to inventoried Hill WUI homes east of the lower-hill edge,
+// then retain a stable one-in-five sample at the structure level.
+function portfolioStructure(s, b){
+  if (s < 0 || bCls[b] !== C_HILL) return false;
+  const bi = b % NBX;
+  const bj = (b / NBX) | 0;
+  const lo = lonOfX((bi + 0.5) * B_RES);
+  const la = latOfY((bj + 0.5) * B_RES);
+  if (PORTFOLIO.key === 'srn3'){
+    const millValleyHomes = la >= 37.8900 && la <= 37.9290 && lo >= -122.5700 && lo <= -122.5150;
+    return millValleyHomes && hash2i(s + 3011, b, S_FAIR ^ 0x4D415249) < 0.22;
+  }
+
+  // Developed hillside bands only. These follow the residential street edge
+  // visible on the basemap and deliberately stop before Tilden, Wildcat Canyon,
+  // San Pablo Reservoir and the Grizzly Peak open-space ridgeline.
+  const southHills = la >= 37.8480 && la < 37.8715 && lo >= -122.2635 && lo <= -122.2385;
+  const cragmont = la >= 37.8765 && la < 37.8990 && lo >= -122.2825 && lo <= -122.2640;
+  const kensington = la >= 37.8990 && la <= 37.9195 && lo >= -122.2925 && lo <= -122.2700;
+  const developedHill = southHills || cragmont || kensington;
+  if (!developedHill) return false;
+  if (PORTFOLIO.key === 'srn2'){
+    // Independent State Farm portfolio: a different, deterministic selection
+    // with slightly more weight in Cragmont and the southern hills.
+    const stateFarmArea = southHills || cragmont ||
+      (la >= 37.8990 && la <= 37.9140 && lo >= -122.2890 && lo <= -122.2720);
+    return stateFarmArea && hash2i(s + 1709, b, S_FAIR ^ 0x5354464D) < 0.18;
+  }
+  return hash2i(s, b, S_FAIR) < 0.20;
+}
+function evalCell(I, J){
+  const i = (I / SUB) | 0, j = (J / SUB) | 0;
+  const si = I - i * SUB, sj = J - j * SUB;
+  const b = j * NBX + i;
+  _cls = bCls[b]; _val = 0; _str = -1; _ratio = 0; _street = 0;
+  _burn = burnedAt(I, J); _pdist = _burn ? perimDistAt(I, J) : 0;
+  if (_cls === C_OPEN || _cls === C_WATER) return b;
+
+  // street network: low-frequency domain warp resolved once per block, then
+  // a periodic grid evaluated analytically per analysis cell
+  const x = I * A_RES + A_RES / 2, y = J * A_RES + A_RES / 2;
+  const hilly = (_cls === C_HILL) ? 1 : 0;
+  const p = hilly ? 152 : 116;
+  const nx = x + bWX[b], ny = y + bWY[b];
+  const u = (nx / p - Math.floor(nx / p)), v = (ny / p - Math.floor(ny / p));
+  if (u < 0.108 || v < (hilly ? 0.052 : 0.108)){ _cls = C_STREET; _street = 1; return b; }
+
+  const s = bStruct[b];
+  if (s >= 0){
+    const dx = si - ST.fx[s], dy = sj - ST.fy[s];
+    if (dx >= 0 && dx < ST.fw[s] && dy >= 0 && dy < ST.fh[s]){
+      _str = s;
+      _val = ST.val[s] / ST.cells[s];
+    }
+  }
+  if (_str >= 0 && portfolioStructure(_str, b)) _val = ST.val[_str] / ST.cells[_str];
+  else _val = 0;
+  if (_burn && _val > 0){
+    const ir = _str >= 0 ? ST.ir[_str] : bHard[b] / 255;
+    _ratio = damageRatio(_cls, ir, bFuel[b] / 255, bInt[b] / 255, hash2i(I, J, S_RES), _pdist);
+  }
+  return b;
+}
+function dinsCat(r){ return r <= 0 ? 0 : r < 0.10 ? 1 : r < 0.26 ? 2 : r < 0.51 ? 3 : 4; }
+const DINS_NAME = ['No damage', 'Affected', 'Minor', 'Major', 'Destroyed'];
+const DINS_RANGE = ['0%', '1–9%', '10–25%', '26–50%', '>50%'];
+
+/* ======================================================= GENERATION ==== */
+const STATS = {
+  cells: N_ANALYSIS, blocks: NB,
+  byClass: [], byDins: [],
+  totalExposure: 0, exposedCells: 0,
+  burnedCells: 0, burnedExposed: 0, exposureInBurn: 0, loss: 0,
+  structures: 0, structBurned: 0, structDestroyed: 0, structValue: 0, structLoss: 0
+};
+for (let c = 0; c < 6; c++) STATS.byClass.push({ cells:0, exposed:0, burned:0, burnedExposed:0, exposure:0, expInBurn:0, loss:0 });
+for (let d = 0; d < 5; d++) STATS.byDins.push({ cells:0, exposure:0, loss:0 });
+
+const PY = [];            // aggregation pyramid: 25 / 50 / 100 / 200 m
+const P99 = [0, 0, 0, 0]; // per-level 99th percentile of cell exposure
+let P99_A = 0;            // 5 m analysis level
+const sampleA = [];
+
+function genBlocks(){
+  const rnd = mulberry32(SEED ^ 0x9E37);
+  for (let j = 0; j < NBY; j++){
+    const y = j * B_RES + B_RES / 2, la = latOfY(y);
+    for (let i = 0; i < NBX; i++){
+      const b = j * NBX + i;
+      const x = i * B_RES + B_RES / 2, lo = lonOfX(x);
+      const cls = classifyAt(la, lo);
+      bCls[b] = cls;
+      const hilly = cls === C_HILL ? 1 : 0;
+      // low-frequency warp bends the whole network; hill blocks get a second,
+      // shorter-wavelength term so hill roads follow contours instead of a grid
+      const amp = 90 + 300 * hilly;
+      bWX[b] = amp * (fbm(x * 0.00085, y * 0.00085, S_WARP, 3) - 0.5) * 2
+             + (hilly ? 130 * (fbm(x * 0.0030 + 21.7, y * 0.0030 + 13.1, S_WARP + 7, 2) - 0.5) * 2 : 0);
+      bWY[b] = amp * (fbm(x * 0.00085 + 11.3, y * 0.00085 + 7.1, S_WARP, 3) - 0.5) * 2
+             + (hilly ? 130 * (fbm(x * 0.0030 + 5.9, y * 0.0030 + 31.4, S_WARP + 7, 2) - 0.5) * 2 : 0);
+      const dmod = 0.55 + 0.95 * fbm(x * 0.0014, y * 0.0014, S_DENS, 4);
+      bDens[b] = BASE_DENSITY[cls] * dmod;
+      // fuel load: maximal in open space, heavy in the hill WUI, low on the flats
+      const fn = fbm(x * 0.0011, y * 0.0011, S_FUEL, 4);
+      const fBase = cls === C_OPEN ? 0.76 : cls === C_HILL ? 0.50 : cls === C_FLAT ? 0.12 : 0.08;
+      const fSpan = cls === C_OPEN ? 0.24 : cls === C_HILL ? 0.36 : cls === C_FLAT ? 0.24 : 0.18;
+      bFuel[b] = Math.round(255 * Math.min(1, fBase + fSpan * fn));
+      // slope rises toward the ridge in the east
+      const east = Math.min(1, Math.max(0, (x - W_M * 0.42) / (W_M * 0.52)));
+      bSlope[b] = Math.round(255 * Math.min(1, 0.05 + 0.72 * east * (0.55 + 0.75 * fbm(x*0.0016, y*0.0016, S_SLOPE, 3))));
+      bInt[b]  = Math.round(255 * fbm(x * 0.0021 + 3.7, y * 0.0021 + 1.9, S_INT, 4));
+      // block hardening index: mean ignition resistance of the un-inventoried stock
+      const hn = fbm(x * 0.0018 + 8.2, y * 0.0018 + 5.5, S_HARD, 3);
+      bHard[b] = Math.round(255 * Math.min(1, Math.max(0, 0.18 + 0.62 * hn + (cls === C_FLAT ? 0.12 : 0))));
+    }
+  }
+  return rnd;
+}
+
+function genStructures(rnd){
+  const target = 600 + Math.floor(rnd() * 601);   // 600–1200
+  let placed = 0, guard = 0;
+  while (placed < target && guard < target * 90){
+    guard++;
+    const i = Math.floor(rnd() * NBX), j = Math.floor(rnd() * NBY);
+    const b = j * NBX + i;
+    if (bStruct[b] !== -1) continue;
+    const cls = bCls[b];
+    let accept = 0;
+    if (cls === C_HILL) accept = 1.0; else if (cls === C_FLAT) accept = 0.26;
+    else if (cls === C_COMM) accept = 0.12; else continue;
+    if (rnd() > accept) continue;
+
+    const big = rnd() < 0.34;
+    const fw = big ? (rnd() < 0.5 ? 2 : 3) : 2;
+    const fh = big ? (fw === 2 ? 3 : 2) : 2;
+    const fx = Math.floor(rnd() * (SUB - fw + 1));
+    const fy = Math.floor(rnd() * (SUB - fh + 1));
+    // footprint must clear the street network
+    let ok = true;
+    for (let dy = 0; dy < fh && ok; dy++) for (let dx = 0; dx < fw && ok; dx++){
+      const I = i * SUB + fx + dx, J = j * SUB + fy + dy;
+      const x = I * A_RES + 2.5, y = J * A_RES + 2.5;
+      const hilly = cls === C_HILL ? 1 : 0, p = hilly ? 152 : 116;
+      const nx = x + bWX[b], ny = y + bWY[b];
+      const u = nx / p - Math.floor(nx / p), v = ny / p - Math.floor(ny / p);
+      if (u < 0.108 || v < (hilly ? 0.052 : 0.108)) ok = false;
+    }
+    if (!ok) continue;
+
+    const cells = fw * fh;
+    const footM2 = cells * A_RES * A_RES;
+    const stories = cls === C_COMM ? (rnd() < 0.4 ? 2 : 1)
+                  : cls === C_HILL ? (rnd() < 0.72 ? 2 : 1) : (rnd() < 0.44 ? 2 : 1);
+    const area = Math.round(footM2 * 10.7639 * stories);          // sq ft
+    const unit = Math.round(490 + rnd() * 190);                   // $/sq ft
+    const post = rnd() < 0.16;                                    // Chapter 7A stock
+    const yr = post ? 2009 + Math.floor(rnd() * 16)
+                    : 1905 + Math.floor(Math.pow(rnd(), 0.72) * 104);
+    const shake = !post && rnd() < 0.34;
+    const roof = post ? (rnd() < 0.5 ? 'Class A composition' : 'Class A concrete tile')
+               : shake ? 'Untreated wood shake' : (rnd() < 0.55 ? 'Class A composition' : 'Class B composition');
+    const defs = Math.min(1, Math.max(0, (cls === C_HILL ? 0.34 : 0.52) + (rnd() - 0.5) * 0.62));
+    const ir = Math.min(1, Math.max(0.04,
+      0.26 + (post ? 0.30 : 0) + 0.22 * defs - (shake ? 0.26 : 0) + 0.12 * ((yr - 1905) / 119)));
+
+    const k = ST.n++;
+    ST.id.push('STR-' + String(100000 + k).slice(1));
+    ST.fx.push(fx); ST.fy.push(fy); ST.fw.push(fw); ST.fh.push(fh);
+    ST.cells.push(cells); ST.blk.push(b);
+    ST.area.push(area); ST.unit.push(unit); ST.val.push(area * unit);
+    ST.yr.push(yr); ST.roof.push(roof); ST.defs.push(defs); ST.ir.push(ir);
+    ST.burned.push(0); ST.loss.push(0);
+    bStruct[b] = k;
+    placed++;
+  }
+  STATS.structures = ST.n;
+}
+
+function genCells(){
+  for (let j = 0; j < NBY; j++){
+    for (let i = 0; i < NBX; i++){
+      const b = j * NBX + i;
+      const cls0 = bCls[b];
+      if (cls0 === C_OPEN || cls0 === C_WATER){
+        // no exposure anywhere in the block, but burned cells still count
+        let bc = 0;
+        for (let sj = 0; sj < SUB; sj++) for (let si = 0; si < SUB; si++)
+          bc += burnedAt(i * SUB + si, j * SUB + sj);
+        bBurn[b] = bc;
+        const cs = STATS.byClass[cls0];
+        cs.cells += SUB * SUB; cs.burned += bc;
+        STATS.burnedCells += bc;
+        STATS.byDins[0].cells += SUB * SUB;
+        continue;
+      }
+      let exp = 0, loss = 0, nexp = 0, burn = 0, expb = 0;
+      for (let sj = 0; sj < SUB; sj++){
+        const J = j * SUB + sj;
+        for (let si = 0; si < SUB; si++){
+          const I = i * SUB + si;
+          evalCell(I, J);
+          const cs = STATS.byClass[_cls];
+          cs.cells++;
+          if (_burn){ burn++; cs.burned++; STATS.burnedCells++; }
+          if (_val > 0){
+            nexp++; exp += _val; cs.exposed++; cs.exposure += _val;
+            STATS.exposedCells++; STATS.totalExposure += _val;
+            if ((sampleA.length < 60000) && ((I * 31 + J) % 89 === 0)) sampleA.push(_val);
+            if (_burn){
+              const dl = _val * _ratio;
+              loss += dl; expb += _val;
+              cs.burnedExposed++; cs.expInBurn += _val; cs.loss += dl;
+              STATS.burnedExposed++; STATS.exposureInBurn += _val; STATS.loss += dl;
+              const d = dinsCat(_ratio);
+              STATS.byDins[d].cells++; STATS.byDins[d].exposure += _val; STATS.byDins[d].loss += dl;
+              if (_str >= 0){ ST.burned[_str]++; ST.loss[_str] += dl; }
+            } else {
+              STATS.byDins[0].cells++; STATS.byDins[0].exposure += _val;
+            }
+          } else {
+            STATS.byDins[0].cells++;
+          }
+        }
+      }
+      bExp[b] = exp; bLoss[b] = loss; bNExp[b] = nexp; bBurn[b] = burn; bExpB[b] = expb;
+    }
+  }
+  for (let k = 0; k < ST.n; k++){
+    STATS.structValue += ST.val[k];
+    STATS.structLoss += ST.loss[k];
+    const f = ST.burned[k] / ST.cells[k];
+    if (f >= 0.5) STATS.structBurned++;
+    if (ST.loss[k] / ST.val[k] > 0.51) STATS.structDestroyed++;
+  }
+}
+
+function pct99(arr){
+  if (!arr.length) return 1;
+  const a = Float64Array.from(arr).sort();
+  return a[Math.min(a.length - 1, Math.floor(a.length * 0.99))] || 1;
+}
+function buildPyramid(){
+  PY.push({ size:B_RES, nx:NBX, ny:NBY, per:SUB*SUB,
+            exp:bExp, loss:bLoss, burn:bBurn, nexp:bNExp, expb:bExpB });
+  for (let L = 1; L <= 3; L++){
+    const p = PY[L - 1];
+    const nx = Math.ceil(p.nx / 2), ny = Math.ceil(p.ny / 2);
+    const o = { size:p.size * 2, nx, ny, per:p.per * 4,
+                exp:new Float64Array(nx*ny), loss:new Float64Array(nx*ny),
+                burn:new Uint32Array(nx*ny), nexp:new Uint32Array(nx*ny),
+                expb:new Float64Array(nx*ny) };
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++){
+      let e = 0, l = 0, bu = 0, ne = 0, eb = 0;
+      for (let dj = 0; dj < 2; dj++) for (let di = 0; di < 2; di++){
+        const si = i*2+di, sj = j*2+dj;
+        if (si >= p.nx || sj >= p.ny) continue;
+        const k = sj*p.nx+si;
+        e += p.exp[k]; l += p.loss[k]; bu += p.burn[k]; ne += p.nexp[k]; eb += p.expb[k];
+      }
+      const k = j*nx+i;
+      o.exp[k] = e; o.loss[k] = l; o.burn[k] = bu; o.nexp[k] = ne; o.expb[k] = eb;
+    }
+    PY.push(o);
+  }
+  for (let L = 0; L < 4; L++){
+    const nz = [];
+    const e = PY[L].exp;
+    const step = Math.max(1, Math.floor(e.length / 90000));
+    for (let k = 0; k < e.length; k += step) if (e[k] > 0) nz.push(e[k]);
+    P99[L] = pct99(nz);
+  }
+  P99_A = pct99(sampleA);
+}
+const LEVEL_OF = { 25:0, 50:1, 100:2, 200:3 };
+
+/* ============================================================ MAP ====== */
+const LADDER = { 12:200, 13:200, 14:100, 15:50, 16:25, 17:5 };
+let map, SHOW_BURN = false, FALLBACK = false;
+let SEL = null;                       // {res, i, j}
+const cv = document.getElementById('gridcanvas');
+const ctx = cv.getContext('2d');
+
+const RAMP = [[0.00,[255,255,255]],[0.34,[195,211,230]],[0.72,[31,78,140]],[1.00,[11,27,51]]];
+function rampRGB(t){
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  for (let k = 0; k < RAMP.length - 1; k++){
+    const a = RAMP[k], b = RAMP[k + 1];
+    if (t <= b[0]){
+      const f = (t - a[0]) / (b[0] - a[0] || 1);
+      return [Math.round(a[1][0]+(b[1][0]-a[1][0])*f),
+              Math.round(a[1][1]+(b[1][1]-a[1][1])*f),
+              Math.round(a[1][2]+(b[1][2]-a[1][2])*f)];
+    }
+  }
+  return RAMP[RAMP.length-1][1];
+}
+const RAMP_CSS = 'linear-gradient(90deg,#FFFFFF 0%,#C3D3E6 34%,#1F4E8C 72%,#0B1B33 100%)';
+
+function initMap(){
+  map = L.map('map', {
+    center: PORTFOLIO.key === 'srn3' ? [37.9100, -122.5480] : [37.8930, -122.2575],
+    zoom: 13, minZoom: 12, maxZoom: 17,
+    zoomAnimation: false, fadeAnimation: false, markerZoomAnimation: false,
+    zoomControl: true, preferCanvas: true, attributionControl: true,
+    maxBounds: L.latLngBounds([BBOX.s, BBOX.w], [BBOX.n, BBOX.e]),
+    maxBoundsViscosity: 1.0
+  });
+
+  // grid sits above tiles, below the fire perimeter and the feature labels
+  map.createPane('gridPane');
+  map.getPane('gridPane').style.zIndex = 450;
+  map.getPane('gridPane').style.pointerEvents = 'none';
+  map.createPane('firePane');
+  map.getPane('firePane').style.zIndex = 460;
+  map.getPane('firePane').style.pointerEvents = 'none';
+  map.getPane('gridPane').appendChild(cv);
+
+  const tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd', minZoom: 12, maxZoom: 19, detectRetina: true
+  });
+  tiles.addTo(map);
+
+  /* -------- basemap availability check --------------------------------
+     If the CARTO tiles cannot be fetched (offline, blocked CSP, no network)
+     we do NOT fail silently: the tile layer is dropped, a flat --gray-100
+     canvas basemap with hand-drawn street polylines and park polygons is
+     drawn beneath the grid instead, and a banner states the substitution. */
+  let tileOK = 0, tileErr = 0;
+  tiles.on('tileload', () => { tileOK++; });
+  tiles.on('tileerror', () => { tileErr++; });
+  setTimeout(() => {
+    if (tileOK === 0){
+      FALLBACK = true;
+      map.removeLayer(tiles);
+      const w = document.getElementById('warnbar');
+      w.className = 'warnbar on';
+      w.textContent = 'BASEMAP FALLBACK ACTIVE — CARTO Positron raster tiles could not be fetched ('
+        + tileErr + ' tile errors). Substituting a flat --gray-100 canvas with schematic street '
+        + 'and open-space geometry. Grid, exposure raster and loss computation are unaffected.';
+      draw();
+    }
+  }, 4500);
+
+  if (PORTFOLIO.key !== 'srn3'){
+    // 1991 Tunnel Fire perimeter — the anchoring fact for the Berkeley zone
+    L.polygon(TUNNEL_1991, {
+      pane: 'firePane', color: '#12325C', weight: 1.4, opacity: 0.9, dashArray: '6 4',
+      fill: false, interactive: false
+    }).addTo(map);
+    L.marker([37.8742, -122.2318], {
+      interactive: false,
+      icon: L.divIcon({ className: '', html:
+        '<div class="fire-label">Tunnel Fire 1991 · 1,520 ac · 3,280 structures</div>',
+        iconSize: [0,0], iconAnchor: [0,0] })
+    }).addTo(map);
+  }
+
+  for (const f of FEATURES){
+    L.marker([f.lat, f.lon], {
+      interactive: false,
+      icon: L.divIcon({ className: '', html:
+        '<div class="feat-label' + (f.open ? ' open' : '') + '">' + f.n + '</div>',
+        iconSize: [0,0], iconAnchor: [0,0] })
+    }).addTo(map);
+  }
+
+  map.on('move zoom zoomend moveend viewreset resize', draw);
+  map.on('click', onMapClick);
+  window.addEventListener('resize', () => { sizeCanvas(); draw(); });
+  sizeCanvas();
+}
+
+let DPR = 1;
+function sizeCanvas(){
+  const r = document.getElementById('map').getBoundingClientRect();
+  DPR = window.devicePixelRatio || 1;
+  cv.style.width = r.width + 'px'; cv.style.height = r.height + 'px';
+  cv.width = Math.round(r.width * DPR); cv.height = Math.round(r.height * DPR);
+}
+
+/* ------- fallback schematic basemap (only used when tiles are blocked) - */
+const FB_STREETS = [
+  { w:2.4, p:[[37.8460,-122.2960],[37.8600,-122.2960],[37.8760,-122.2980],[37.8900,-122.3000],[37.9060,-122.3010],[37.9260,-122.2980],[37.9400,-122.2930]] }, // I-80 / frontage
+  { w:1.6, p:[[37.8460,-122.2900],[37.8700,-122.2890],[37.8905,-122.2880],[37.9100,-122.2870],[37.9400,-122.2840]] }, // San Pablo Ave
+  { w:1.6, p:[[37.8908,-122.2996],[37.8905,-122.2880],[37.8902,-122.2812],[37.8916,-122.2750]] },                     // Solano Ave
+  { w:1.6, p:[[37.8720,-122.3000],[37.8712,-122.2860],[37.8706,-122.2720],[37.8700,-122.2620]] },                     // University Ave
+  { w:1.6, p:[[37.8520,-122.2960],[37.8516,-122.2800],[37.8510,-122.2660],[37.8506,-122.2520],[37.8530,-122.2400]] }, // Ashby Ave
+  { w:1.4, p:[[37.8478,-122.2680],[37.8600,-122.2680],[37.8702,-122.2690],[37.8804,-122.2706],[37.8900,-122.2720]] }, // Shattuck Ave
+  { w:1.4, p:[[37.8460,-122.2528],[37.8524,-122.2526],[37.8602,-122.2520],[37.8644,-122.2542]] },                     // College Ave
+  { w:1.4, p:[[37.8560,-122.2470],[37.8620,-122.2420],[37.8680,-122.2400],[37.8740,-122.2420]] },                     // Claremont Ave
+  { w:1.4, p:[[37.8532,-122.2400],[37.8580,-122.2320],[37.8640,-122.2260],[37.8700,-122.2230]] },                     // Tunnel Rd / Hwy 13
+  { w:1.4, p:[[37.8620,-122.2420],[37.8720,-122.2400],[37.8820,-122.2402],[37.8900,-122.2412],[37.8980,-122.2450]] }, // Grizzly Peak Blvd
+  { w:1.2, p:[[37.8880,-122.2990],[37.8900,-122.2860],[37.8930,-122.2740],[37.8960,-122.2640]] },                     // Marin Ave
+  { w:1.2, p:[[37.8940,-122.2640],[37.9020,-122.2700],[37.9100,-122.2760],[37.9180,-122.2800]] },                     // Arlington Ave
+  { w:1.2, p:[[37.8760,-122.2620],[37.8860,-122.2610],[37.8940,-122.2620]] },                                         // Spruce St
+  { w:1.2, p:[[37.8700,-122.2570],[37.8800,-122.2560],[37.8880,-122.2570],[37.8940,-122.2600]] },                     // Euclid Ave
+  { w:1.2, p:[[37.9060,-122.2560],[37.9160,-122.2620],[37.9260,-122.2700],[37.9360,-122.2740]] }                      // Wildcat Canyon Rd
+];
+function drawFallbackBase(){
+  const g = ctx, sz = map.getSize();
+  g.fillStyle = '#EDEFF3'; g.fillRect(0, 0, sz.x, sz.y);
+  const P = ll => { const p = map.latLngToContainerPoint(ll); return [p.x, p.y]; };
+  // bay
+  g.beginPath();
+  g.moveTo.apply(g, P([BBOX.s, BBOX.w]));
+  for (const s of SHORE) g.lineTo.apply(g, P([s[0], s[1]]));
+  g.lineTo.apply(g, P([BBOX.n, BBOX.w]));
+  g.closePath(); g.fillStyle = '#E2E7EE'; g.fill();
+  // open space
+  g.fillStyle = '#E6EAE4'; g.strokeStyle = '#D3D8E0'; g.lineWidth = 1;
+  for (const poly of [TILDEN, WILDCAT]){
+    g.beginPath();
+    poly.forEach((p, k) => { const q = P(p); k ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); });
+    g.closePath(); g.fill(); g.stroke();
+  }
+  // streets
+  g.strokeStyle = '#FFFFFF'; g.lineCap = 'round';
+  for (const s of FB_STREETS){
+    g.lineWidth = s.w * 1.9; g.beginPath();
+    s.p.forEach((p, k) => { const q = P(p); k ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); });
+    g.stroke();
+  }
+  g.strokeStyle = 'rgba(107,118,132,.35)';
+  for (const s of FB_STREETS){
+    g.lineWidth = s.w * 1.9 + 1; g.beginPath();
+    s.p.forEach((p, k) => { const q = P(p); k ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); });
+    g.stroke();
+  }
+}
+
+/* ------------------------------------------------------------ renderer */
+function draw(){
+  if (!map || !PY.length) return;
+  const sz = map.getSize();
+  if (cv.width !== Math.round(sz.x * DPR) || cv.height !== Math.round(sz.y * DPR)) sizeCanvas();
+  L.DomUtil.setPosition(cv, map.containerPointToLayerPoint([0, 0]));
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.clearRect(0, 0, sz.x, sz.y);
+  if (FALLBACK) drawFallbackBase();
+
+  const z = Math.round(map.getZoom());
+  const cellM = LADDER[z] || 200;
+  const bnds = map.getBounds();
+
+  const i0 = Math.max(0, Math.floor(xOfLon(bnds.getWest())  / cellM) - 1);
+  const i1 = Math.min(Math.ceil(W_M / cellM) - 1, Math.floor(xOfLon(bnds.getEast()) / cellM) + 1);
+  const j0 = Math.max(0, Math.floor(yOfLat(bnds.getSouth()) / cellM) - 1);
+  const j1 = Math.min(Math.ceil(H_M / cellM) - 1, Math.floor(yOfLat(bnds.getNorth()) / cellM) + 1);
+  if (i1 < i0 || j1 < j0){ drawSelection(cellM); return; }
+
+  // exact reprojection: in Web Mercator, screen x depends only on longitude
+  // and screen y only on latitude, so one pass per column and per row suffices
+  const px = new Float64Array(i1 - i0 + 2), py = new Float64Array(j1 - j0 + 2);
+  for (let i = i0; i <= i1 + 1; i++) px[i - i0] = map.latLngToContainerPoint([LAT0, lonOfX(i * cellM)]).x;
+  for (let j = j0; j <= j1 + 1; j++) py[j - j0] = map.latLngToContainerPoint([latOfY(j * cellM), BBOX.w]).y;
+
+  if (cellM === A_RES) drawAnalysis(i0, i1, j0, j1, px, py);
+  else                 drawAggregate(LEVEL_OF[cellM], i0, i1, j0, j1, px, py);
+
+  if (cellM <= B_RES) drawHairlines(i0, i1, j0, j1, px, py);
+  drawSelection(cellM);
+  updateReadouts(z, cellM);
+}
+
+function paintExposure(g, v, p99, x, y, w, h){
+  if (v <= 0) return;                                  // zero exposure → transparent
+  const t = Math.pow(Math.min(1, v / p99), 0.55);
+  const shade = Math.round(112 - 38 * t);
+  g.fillStyle = 'rgba(' + shade + ',' + shade + ',' + shade + ',0.78)';
+  // Aggregated cells can span 25–200 m. Draw a compact home marker rather
+  // than implying that the entire display cell is insured.
+  const insetX = w > 5 ? w * 0.28 : 0;
+  const insetY = h > 5 ? h * 0.28 : 0;
+  g.fillRect(x + insetX, y + insetY, Math.max(2, w - insetX * 2), Math.max(2, h - insetY * 2));
+}
+function paintBurn(g, burnFrac, x, y, w, h){
+  if (burnFrac > 0){
+    g.fillStyle = 'rgba(163,58,40,' + (0.60 * burnFrac).toFixed(3) + ')';
+    g.fillRect(x, y, w, h);
+  }
+}
+function drawAggregate(L, i0, i1, j0, j1, px, py){
+  const P = PY[L], g = ctx, p99 = P99[L];
+  for (let j = j0; j <= j1; j++){
+    if (j >= P.ny) continue;
+    const yTop = py[j + 1 - j0], yBot = py[j - j0];
+    const h = Math.max(1, yBot - yTop);
+    for (let i = i0; i <= i1; i++){
+      if (i >= P.nx) continue;
+      const k = j * P.nx + i;
+      const x = px[i - i0], w = Math.max(1, px[i + 1 - i0] - x);
+      paintExposure(g, P.exp[k], p99, x, yTop, w, h);
+      if (SHOW_BURN) paintBurn(g, P.burn[k] / P.per, x, yTop, w, h);
+    }
+  }
+}
+function drawAnalysis(i0, i1, j0, j1, px, py){
+  const g = ctx;
+  for (let J = j0; J <= j1; J++){
+    if (J >= NAY) continue;
+    const yTop = py[J + 1 - j0], h = Math.max(1, py[J - j0] - yTop);
+    for (let I = i0; I <= i1; I++){
+      if (I >= NAX) continue;
+      const x = px[I - i0], w = Math.max(1, px[I + 1 - i0] - x);
+      evalCell(I, J);
+      paintExposure(g, _val, P99_A, x, yTop, w, h);
+      if (SHOW_BURN) paintBurn(g, _burn ? 1 : 0, x, yTop, w, h);
+    }
+  }
+}
+function drawHairlines(i0, i1, j0, j1, px, py){
+  const g = ctx;
+  g.strokeStyle = 'rgba(11,27,51,0.10)'; g.lineWidth = 0.6;
+  g.beginPath();
+  const yA = py[j1 + 1 - j0], yB = py[0];
+  for (let i = i0; i <= i1 + 1; i++){ const x = Math.round(px[i - i0]) + 0.25; g.moveTo(x, yA); g.lineTo(x, yB); }
+  const xA = px[0], xB = px[i1 + 1 - i0];
+  for (let j = j0; j <= j1 + 1; j++){ const y = Math.round(py[j - j0]) + 0.25; g.moveTo(xA, y); g.lineTo(xB, y); }
+  g.stroke();
+}
+function drawSelection(cellM){
+  if (!SEL || SEL.res !== cellM) return;
+  const g = ctx;
+  const a = map.latLngToContainerPoint([latOfY((SEL.j + 1) * cellM), lonOfX(SEL.i * cellM)]);
+  const b = map.latLngToContainerPoint([latOfY(SEL.j * cellM), lonOfX((SEL.i + 1) * cellM)]);
+  const x = a.x, y = a.y, w = Math.max(3, b.x - a.x), h = Math.max(3, b.y - a.y);
+  g.strokeStyle = '#1F4E8C'; g.lineWidth = 1.6;
+  g.strokeRect(x - 0.5, y - 0.5, w + 1, h + 1);
+  g.strokeStyle = '#FFFFFF'; g.lineWidth = 1;
+  g.strokeRect(x - 2, y - 2, w + 4, h + 4);
+  g.strokeStyle = '#0B1B33'; g.lineWidth = 1.4;
+  const t = Math.max(5, Math.min(11, w * 0.32));
+  g.beginPath();
+  g.moveTo(x, y + t); g.lineTo(x, y); g.lineTo(x + t, y);
+  g.moveTo(x + w - t, y); g.lineTo(x + w, y); g.lineTo(x + w, y + t);
+  g.moveTo(x + w, y + h - t); g.lineTo(x + w, y + h); g.lineTo(x + w - t, y + h);
+  g.moveTo(x + t, y + h); g.lineTo(x, y + h); g.lineTo(x, y + h - t);
+  g.stroke();
+}
+
+/* ------------------------------------------------------- format helpers */
+const NF = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const usd = v => '$' + NF.format(Math.round(v));
+function usdS(v){
+  const a = Math.abs(v);
+  if (a >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';
+  if (a >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+  if (a >= 1e3) return '$' + (v / 1e3).toFixed(1) + 'K';
+  return '$' + Math.round(v);
+}
+const num = v => NF.format(v);
+const acres = cells => cells * A_RES * A_RES / 4046.856;
+const pctS = (a, b) => b ? (100 * a / b).toFixed(2) + '%' : '0.00%';
+// a single 5 m cell is a few parts per million of a $55 B zone; 0.00% is noise
+function shareS(a, b){
+  if (!b || !a) return '0.00%';
+  const pc = 100 * a / b;
+  if (pc >= 0.01) return pc.toFixed(2) + '%';
+  const ppm = 1e6 * a / b;
+  return ppm >= 1 ? ppm.toFixed(2) + ' ppm' : (ppm * 1000).toFixed(1) + ' ppb';
+}
+
+/* ------------------------------------------------------------ readouts */
+function updateReadouts(z, cellM){
+  const per = (cellM / A_RES) * (cellM / A_RES);
+  const p99 = cellM === A_RES ? P99_A : P99[LEVEL_OF[cellM]];
+  if (p99 !== CUR_P99){ CUR_P99 = p99; renderLegend(); }
+  document.getElementById('res-readout').innerHTML =
+    'grid <b>' + cellM + ' m</b> <span class="dim">· analysis 5 m</span>';
+  const nxc = cellM === A_RES ? NAX : PY[LEVEL_OF[cellM]].nx;
+  const nyc = cellM === A_RES ? NAY : PY[LEVEL_OF[cellM]].ny;
+  document.getElementById('scalebadge').innerHTML =
+    'z<b>' + z + '</b> · display cell <b>' + cellM + ' m</b><br>' +
+    (cellM === A_RES ? '1:1 with analysis cell' : '1 cell = <b>' + num(per) + '</b> analysis cells') +
+    '<br>' + num(nxc) + ' × ' + num(nyc) + ' cells in zone';
+}
+let CUR_P99 = 0;
+function renderLegend(){
+  const el = document.getElementById('legend');
+  el.innerHTML =
+      '<span class="lbl">Estimated ' + PORTFOLIO.carrier + ' exposure</span>' +
+      '<div class="swatchrow"><span class="swatch" style="background:rgba(78,78,78,.78)"></span>' +
+      '<span>Selected home<span class="mono"> · ' + PORTFOLIO.sample + ' sample</span></span></div>' +
+      '<div class="swatchrow"><span class="swatch" style="background:transparent;background-image:' +
+      'linear-gradient(45deg,#EDEFF3 25%,transparent 25%,transparent 75%,#EDEFF3 75%),' +
+      'linear-gradient(45deg,#EDEFF3 25%,transparent 25%,transparent 75%,#EDEFF3 75%);' +
+      'background-size:6px 6px;background-position:0 0,3px 3px"></span>' +
+      '<span>No estimated exposure<span class="mono"> · unselected / outside ' +
+      (PORTFOLIO.key === 'srn3' ? 'Mill Valley hillside' : 'deep hills') + '</span></span></div>' +
+      (SHOW_BURN
+        ? '<div class="swatchrow"><span class="swatch" style="background:rgba(163,58,40,.60)"></span>' +
+          '<span>Burned overlay</span></div>'
+        : '');
+}
+
+/* ----------------------------------------------------------- inspector */
+function onMapClick(e){
+  const cellM = LADDER[Math.round(map.getZoom())] || 200;
+  const x = xOfLon(e.latlng.lng), y = yOfLat(e.latlng.lat);
+  if (x < 0 || y < 0 || x >= W_M || y >= H_M) return;
+  SEL = { res: cellM, i: Math.floor(x / cellM), j: Math.floor(y / cellM) };
+  renderInspector();
+  draw();
+}
+
+function cellStructures(res, i, j){
+  const out = [];
+  if (res === A_RES){
+    const bi = (i / SUB) | 0, bj = (j / SUB) | 0, b = bj * NBX + bi;
+    const s = bStruct[b];
+    if (s >= 0){
+      const dx = (i - bi * SUB) - ST.fx[s], dy = (j - bj * SUB) - ST.fy[s];
+      if (dx >= 0 && dx < ST.fw[s] && dy >= 0 && dy < ST.fh[s]) out.push(s);
+    }
+    return out;
+  }
+  const k = res / B_RES;
+  for (let bj = j * k; bj < (j + 1) * k && bj < NBY; bj++)
+    for (let bi = i * k; bi < (i + 1) * k && bi < NBX; bi++){
+      const s = bStruct[bj * NBX + bi];
+      if (s >= 0) out.push(s);
+    }
+  return out;
+}
+
+function renderInspector(){
+  const el = document.getElementById('insp-body');
+  if (!SEL){ return; }
+  const res = SEL.res, i = SEL.i, j = SEL.j;
+  const per = (res / A_RES) * (res / A_RES);
+  const cLat = latOfY((j + 0.5) * res), cLon = lonOfX((i + 0.5) * res);
+  const cid = 'C' + String(res).padStart(3, '0') + '-' +
+              String(i).padStart(5, '0') + '-' + String(j).padStart(5, '0');
+  document.getElementById('insp-id').textContent = cid;
+
+  let exp = 0, loss = 0, burn = 0, nexp = 0, expb = 0, cls = C_OPEN, ratio = 0, pdist = -1;
+  if (res === A_RES){
+    evalCell(i, j);
+    cls = _cls; exp = _val; ratio = _ratio; burn = _burn ? 1 : 0; pdist = _pdist;
+    nexp = _val > 0 ? 1 : 0; expb = burn ? _val : 0; loss = burn ? _val * _ratio : 0;
+  } else {
+    const L = LEVEL_OF[res], P = PY[L], k = j * P.nx + i;
+    exp = P.exp[k]; loss = P.loss[k]; burn = P.burn[k]; nexp = P.nexp[k]; expb = P.expb[k];
+    ratio = expb > 0 ? loss / expb : 0;
+    const bi = Math.min(NBX - 1, (i * res / B_RES) | 0), bj = Math.min(NBY - 1, (j * res / B_RES) | 0);
+    cls = bCls[bj * NBX + bi];
+  }
+  const strs = cellStructures(res, i, j).sort((a, b) => ST.val[b] - ST.val[a]);
+  const burnFrac = burn / per;
+  const dcat = dinsCat(ratio);
+
+  const R = (k, v, klass) => '<div class="row"><span class="k">' + k +
+    '</span><span class="v ' + (klass || '') + '">' + v + '</span></div>';
+
+  let h = '';
+  h += '<div class="grp"><span class="lbl">Geometry</span>' +
+    R('Centroid', cLat.toFixed(5) + ', ' + cLon.toFixed(5)) +
+    R('Display resolution', res + ' m × ' + res + ' m') +
+    R('Ground area', res === 5 ? '25 m²' : num(res * res) + ' m²') +
+    R('Analysis cells', res === A_RES ? '1 · native 5 m' : num(per) + ' × 5 m aggregated') +
+    R('Land class', CLASS_SHORT[cls] + ' · ' + CLASS_NAME[cls]) +
+    '</div>';
+
+  h += '<div class="grp"><span class="lbl">Estimated ' + PORTFOLIO.carrier + ' exposure</span>' +
+    R('Estimated value in cell', usd(exp), 'big') +
+    R('Cells carrying value', res === A_RES ? (nexp ? '1 of 1' : '0 of 1') : num(nexp) + ' of ' + num(per)) +
+    R('Value per insured 5 m cell', nexp ? usd(exp / nexp) : '—') +
+    R('Share of zone exposure', shareS(exp, STATS.totalExposure)) +
+    '</div>';
+
+  const state = burn > 0 ? 'burned' : (exp > 0 ? 'undamaged' : 'not burned');
+  h += '<div class="grp"><span class="lbl">State</span>' +
+    '<div class="row"><span class="k">State</span><span class="v">' +
+      '<span class="chip ' + (burn > 0 ? 'burned' : 'intact') + '">' + state + '</span>' +
+    '</span></div>' +
+    '</div>';
+
+  h += '<div class="grp"><span class="lbl">Provenance</span>' +
+    R('Cell ID', cid) +
+    R('Block', 'B25-' + String(Math.min(NBX-1,(i*res/B_RES)|0)).padStart(5,'0') + '-' +
+                String(Math.min(NBY-1,(j*res/B_RES)|0)).padStart(5,'0')) +
+    R('Seed', SEED_HEX) +
+    R('Treaty', PORTFOLIO.note + ' · ' + PORTFOLIO.treaty) +
+    '</div>';
+
+  el.innerHTML = h;
+  showSelContribution(cid, exp, loss);
+}
+
+function showSelContribution(cid, exp, loss){
+  // The single-value damage tile intentionally has no selected-cell breakdown.
+}
+
+/* ==================================================== TILE 02 · DAMAGE = */
+const LAYER = { attach: 1250e6, exhaust: 5000e6 };
+const EVENT = { id:'EVT-2026-0814-BRK', name:'Claremont Canyon Fire', ignition:'2026-08-14 04:12 PDT',
+                contained:'2026-08-19 11:00 PDT', capture:'2026-08-19 · Sentinel-2 L2A' };
+const CLASS_SWATCH = ['#EDEFF3', '#12325C', '#1F4E8C', '#C3D3E6', '#F7F8FA', '#E2E7EE'];
+
+function renderELChart(){
+  const values = PORTFOLIO.elHistory;
+  const months = ['Dec 25','Jan 26','Feb 26','Mar 26','Apr 26','May 26','Jun 26','Jul 26','Aug 26'];
+  const x0 = 58, x1 = 874, y0 = 14, y1 = 142;
+  const rawMin = Math.min.apply(null, values), rawMax = Math.max.apply(null, values);
+  const pad = Math.max(0.05, (rawMax - rawMin) * 0.35);
+  const lo = Math.max(0, rawMin - pad), hi = rawMax + pad;
+  const x = i => x0 + (x1 - x0) * i / (values.length - 1);
+  const y = v => y1 - (v - lo) / (hi - lo) * (y1 - y0);
+  const pts = values.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+  let h = '';
+  for (let t = 0; t < 3; t++){
+    const v = hi - (hi - lo) * t / 2, yy = y(v);
+    h += '<line class="grid" x1="' + x0 + '" y1="' + yy.toFixed(1) + '" x2="' + x1 + '" y2="' + yy.toFixed(1) + '"></line>' +
+      '<text class="axis-text" x="0" y="' + (yy + 3).toFixed(1) + '">' + v.toFixed(2) + '%</text>';
+  }
+  const baseY = y(values[0]);
+  h += '<line x1="' + x0 + '" y1="' + baseY.toFixed(1) + '" x2="' + x1 + '" y2="' + baseY.toFixed(1) + '" stroke="#6B7684" stroke-width="1" stroke-dasharray="5 5"></line>' +
+    '<polygon class="area" points="' + x0 + ',' + y1 + ' ' + pts + ' ' + x1 + ',' + y1 + '"></polygon>' +
+    '<polyline class="line" points="' + pts + '"></polyline>';
+  values.forEach((v, i) => {
+    h += '<circle class="point' + (i === values.length - 1 ? ' current' : '') + '" cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="3.5"></circle>' +
+      '<text class="axis-text" text-anchor="middle" x="' + x(i).toFixed(1) + '" y="166">' + months[i] + '</text>';
+  });
+  h += '<text class="axis-text" text-anchor="end" x="' + x1 + '" y="' + (baseY - 6).toFixed(1) + '">underwriting baseline</text>' +
+    '<text class="axis-text" text-anchor="end" x="' + x1 + '" y="181">current ' + values[values.length - 1].toFixed(2) + '%</text>';
+  document.getElementById('el-chart-svg').innerHTML = h;
+}
+
+function renderTerms(){
+  const p = PORTFOLIO;
+  const uwRate = 100 * p.uwEL / p.limit;
+  const currentRate = 100 * p.currentEL / p.limit;
+  const change = 100 * (p.currentEL / p.uwEL - 1);
+  const bps = Math.round((currentRate - uwRate) * 100);
+  document.getElementById('terms-id').textContent = p.note + ' · ' + p.treaty;
+  document.getElementById('term-attach').textContent = usdS(p.attachment);
+  document.getElementById('term-limit').textContent = usdS(p.limit);
+  document.getElementById('term-collateral').textContent = p.collateral;
+  document.getElementById('term-spread').textContent = p.spread;
+  document.getElementById('term-return').textContent = p.totalReturn;
+  document.getElementById('term-last-label').textContent = 'Claims damages paid out';
+  document.getElementById('term-last-note').textContent = 'linked to modeled damage value';
+  document.getElementById('el-original').textContent = uwRate.toFixed(2) + '%';
+  document.getElementById('el-current').textContent = currentRate.toFixed(2) + '%';
+  const changeEl = document.getElementById('el-change');
+  changeEl.textContent =
+    (change >= 0 ? '↑ ' : '↓ ') + Math.abs(change).toFixed(1) + '% since underwriting · ' + Math.abs(bps) + ' bps of limit';
+  changeEl.style.color = change >= 0 ? '#8A3B2D' : '#356346';
+  changeEl.style.borderColor = change >= 0 ? '#D8B9B2' : '#BCD1C2';
+  changeEl.style.background = change >= 0 ? '#FAF3F1' : '#F2F7F3';
+  document.querySelectorAll('.development a').forEach(a => { a.style.display = p.key === 'srn3' ? 'none' : ''; });
+  if (p.key === 'srn3'){
+    document.getElementById('term-claims').textContent = '$0';
+    document.getElementById('dev-one-title').textContent = 'Continued hillside construction increases Mill Valley exposure';
+    document.getElementById('dev-one-copy').textContent = 'New and expanded homes deeper in Mill Valley’s steep, wooded neighborhoods increase insured value at the wildland–urban interface and raise the modeled expected loss despite no current wildfire event.';
+    document.getElementById('mitigation-impact').textContent = 'Modeled impact: +20 bps from exposure growth and deeper hillside concentration.';
+    document.getElementById('dev-two-title').textContent = 'Drier Mill Valley conditions raise wildfire risk';
+    document.getElementById('dev-two-copy').textContent = 'Lower fuel moisture and a longer dry period increase the probability of a future wildfire reaching residential areas around Mount Tamalpais and Mill Valley.';
+    document.getElementById('weather-impact').textContent = 'Modeled impact: +25 bps from dryness and fuel-moisture stress; there is no active modeled wildfire.';
+  } else {
+    document.getElementById('mitigation-impact').textContent =
+      'Modeled impact: −' + (Math.abs(bps) + 25) + ' bps of expected loss from updated mitigation inputs.';
+    document.getElementById('weather-impact').textContent =
+      'Modeled impact: +25 bps of expected loss, partially offsetting the mitigation benefit. This is a scenario adjustment, not a NOAA loss estimate.';
+  }
+  renderELChart();
+}
+
+function riskSignals(){
+  return PORTFOLIO.key === 'srn3'
+    ? { detection:0, reporting:'0 of 0', latency:'0 sec', water:'0', stations:0,
+        engines:0, arrival:'0 sec', drops:0, responseEffectiveness:0, smoke:0, heat:0 }
+    : PORTFOLIO.key === 'srn2'
+    ? { detection:0.64, reporting:'129 of 202', latency:'4 min 36 sec', water:'1.46M', stations:5,
+        engines:17, arrival:'8 min 05 sec', drops:9, responseEffectiveness:0.58, smoke:330, heat:44.0 }
+    : { detection:0.88, reporting:'163 of 185', latency:'1 min 58 sec', water:'2.15M', stations:8,
+        engines:27, arrival:'5 min 48 sec', drops:16, responseEffectiveness:0.82, smoke:220, heat:31.5 };
+}
+
+function renderSignals(){
+  const sig = riskSignals();
+  document.getElementById('signals-note').textContent =
+    PORTFOLIO.note + ' · Property sensing and response telemetry';
+  document.getElementById('sig-detection').innerHTML =
+    sig.detection.toFixed(2) + ' <small>· ' + Math.round(sig.detection * 100) + '%</small>';
+  document.getElementById('sig-reporting').textContent = sig.reporting;
+  document.getElementById('sig-latency').textContent = sig.latency;
+  document.getElementById('sig-water').innerHTML = sig.water + ' <small>gal</small>';
+  document.getElementById('sig-stations').textContent = String(sig.stations);
+  document.getElementById('sig-engines').textContent = String(sig.engines);
+  document.getElementById('sig-arrival').textContent = sig.arrival;
+  document.getElementById('sig-drops').textContent = String(sig.drops);
+  document.getElementById('sig-smoke').innerHTML = sig.smoke + ' <small>µg/m³</small>';
+  document.getElementById('sig-smoke-row').textContent = sig.smoke + ' µg/m³ PM2.5';
+  document.getElementById('sig-heat').textContent = sig.heat.toFixed(1) + ' kW/m²';
+}
+
+function renderDamage(){
+  const S = STATS;
+  const meanRatio = S.exposureInBurn ? S.loss / S.exposureInBurn : 0;
+  const burnedShare = S.exposedCells ? S.burnedExposed / S.exposedCells : 0;
+  const sig = riskSignals();
+  const noEvent = PORTFOLIO.key === 'srn3';
+  const detectionGap = noEvent ? 0 : 1 - sig.detection;
+  const responseStrain = noEvent ? 0 : 1 - sig.responseEffectiveness;
+  const severityScore = ((sig.smoke / 500) + (sig.heat / 50)) / 2;
+  const damageIndex = 0.85 * burnedShare + 0.05 * detectionGap +
+    0.05 * responseStrain + 0.05 * severityScore;
+  const modeledDamage = noEvent ? 0 : S.totalExposure * damageIndex;
+
+  document.getElementById('hd-loss').textContent = usdS(modeledDamage);
+  if (!noEvent) document.getElementById('term-claims').textContent = usdS(modeledDamage);
+  document.getElementById('damage-formula').innerHTML =
+    usdS(S.totalExposure) + ' <span class="op">×</span> [85% × burned-cell share + ' +
+    '5% × detection gap + 5% × response strain + 5% × severity]';
+  document.getElementById('damage-parts').innerHTML =
+    '<span class="formula-part"><b>85%</b> burned cells · ' + (burnedShare * 100).toFixed(1) + '%</span>' +
+    '<span class="formula-part"><b>5%</b> detection gap · ' + detectionGap.toFixed(2) + '</span>' +
+    '<span class="formula-part"><b>5%</b> response strain · ' + responseStrain.toFixed(2) + '</span>' +
+    '<span class="formula-part"><b>5%</b> severity · ' + severityScore.toFixed(2) + '</span>' +
+    '<span class="formula-part"><b>Composite</b> · ' + damageIndex.toFixed(3) + '</span>';
+  document.getElementById('foot-l').textContent =
+    PORTFOLIO.note + ' · ' + PORTFOLIO.treaty + ' · estimated ' + PORTFOLIO.carrier +
+    ' portfolio · ' + PORTFOLIO.sample + ' of eligible ' + (noEvent ? 'Mill Valley' : 'Berkeley Hills') + ' homes';
+  return;
+  document.getElementById('hd-losslong').textContent = usd(S.loss);
+  document.getElementById('hd-tags').innerHTML =
+    '<span class="chip">' + EVENT.id + '</span>' +
+    '<span class="chip burned">' + NF.format(Math.round(acres(S.burnedCells))) + ' ac burned</span>' +
+    '<span class="chip">' + num(S.structDestroyed) + ' structures destroyed</span>' +
+    '<span class="chip">' + pctS(S.loss, S.totalExposure) + ' of zone exposure</span>';
+
+  /* ---- derivation chain: line 4 × line 5 is line 6 by construction ---- */
+  const chain = [
+    ['01', 'Analysis cells in zone', A_RES + ' m native · ' + num(NBX) + ' × ' + num(NBY) + ' aggregation blocks', num(N_ANALYSIS), ''],
+    ['02', 'Cells carrying frozen insured value', 'street, open space and water carry zero', num(S.exposedCells), ''],
+    ['03', 'Total zone exposure', 'vintage 2026-01-01, not revalued post-event', usd(S.totalExposure), ''],
+    ['04', 'Cells classified burned', EVENT.capture + ' · ' + NF.format(Math.round(acres(S.burnedCells))) + ' ac', num(S.burnedCells), 'rule'],
+    ['05', 'Burned cells carrying insured value', num(S.burnedCells - S.burnedExposed) + ' burned cells carry none', num(S.burnedExposed), ''],
+    ['06', 'Insured value inside the burn footprint', 'Σ v<sub>i</sub> over burned insured cells', usd(S.exposureInBurn), ''],
+    ['07', 'Value-weighted mean damage ratio', 'DF-CA-WF v2.1 · Σ v<sub>i</sub>r<sub>i</sub> ÷ Σ v<sub>i</sub>', meanRatio.toFixed(8), 'x']
+  ];
+  let ch = '';
+  for (const r of chain){
+    ch += '<tr class="' + (r[4] === 'rule' ? 'rule' : '') + '">' +
+      '<td class="step">' + r[0] + '</td>' +
+      '<td class="op">' + (r[4] === 'x' ? '×' : '') + '</td>' +
+      '<td class="desc">' + r[1] + '<small>' + r[2] + '</small></td>' +
+      '<td class="val">' + r[3] + '</td></tr>';
+  }
+  ch += '<tr class="total"><td class="step">08</td><td class="op">=</td>' +
+        '<td class="desc">Gross modeled loss<small>deterministic · no adjuster · no negotiation</small></td>' +
+        '<td class="val">' + usd(S.loss) + '</td></tr>';
+  document.getElementById('chain-tbl').innerHTML = ch;
+
+  /* ---- loss by land class ---- */
+  let ct = '<tr><th>Land class</th><th>Burned cells</th><th>Value in burn</th><th>Mean ratio</th><th>Modeled loss</th><th>Share</th></tr>';
+  let sumLoss = 0, sumExpB = 0, sumBurn = 0;
+  for (const c of [C_HILL, C_FLAT, C_COMM, C_OPEN, C_STREET]){
+    const q = S.byClass[c];
+    if (!q.cells) continue;
+    const mr = q.expInBurn ? q.loss / q.expInBurn : 0;
+    sumLoss += q.loss; sumExpB += q.expInBurn; sumBurn += q.burned;
+    ct += '<tr><td><span class="sw" style="background:' + CLASS_SWATCH[c] + '"></span>' + CLASS_NAME[c] +
+      '</td><td>' + num(q.burned) + '</td><td>' + usdS(q.expInBurn) + '</td><td>' +
+      (q.expInBurn ? mr.toFixed(4) : '—') + '</td><td>' + usdS(q.loss) + '</td><td>' +
+      pctS(q.loss, S.loss) + '</td></tr>';
+  }
+  ct += '<tr class="sum"><td>Zone total</td><td>' + num(sumBurn) + '</td><td>' + usdS(sumExpB) +
+        '</td><td>' + (sumExpB ? (sumLoss / sumExpB).toFixed(4) : '—') + '</td><td>' + usdS(sumLoss) +
+        '</td><td>100.00%</td></tr>';
+  document.getElementById('class-tbl').innerHTML = ct;
+
+  /* ---- DINS distribution ---- */
+  const DINS_FILL = ['#D3D8E0', 'rgba(163,58,40,.28)', 'rgba(163,58,40,.46)', 'rgba(163,58,40,.68)', 'rgba(163,58,40,1)'];
+  let maxC = 1;
+  for (let d = 1; d < 5; d++) maxC = Math.max(maxC, S.byDins[d].cells);
+  let dl = '';
+  for (let d = 4; d >= 1; d--){
+    const q = S.byDins[d];
+    dl += '<div class="dinsrow"><div class="nm">' + DINS_NAME[d] +
+      '<small>damage ratio ' + DINS_RANGE[d] + '</small>' +
+      '<div class="dinsbar"><i style="width:' + (100 * q.cells / maxC).toFixed(1) + '%;background:' + DINS_FILL[d] + '"></i></div>' +
+      '</div><div class="ct">' + num(q.cells) + '</div><div class="ls">' + usdS(q.loss) + '</div></div>';
+  }
+  dl += '<div class="dinsrow" style="border-bottom:0"><div class="nm">Unburned, insured' +
+    '<small>excluded from settlement</small></div><div class="ct">' +
+    num(S.exposedCells - S.burnedExposed) + '</div><div class="ls">$0</div></div>';
+  dl += '<div style="margin-top:12px" class="lbl">Inventoried structures</div>' +
+    '<table class="data"><tr><td>In inventory</td><td>' + num(S.structures) + '</td></tr>' +
+    '<tr><td>Footprint ≥50% burned</td><td>' + num(S.structBurned) + '</td></tr>' +
+    '<tr><td>DINS destroyed</td><td>' + num(S.structDestroyed) + '</td></tr>' +
+    '<tr><td>Structure-attributed loss</td><td>' + usdS(S.structLoss) + '</td></tr></table>';
+  document.getElementById('dins-list').innerHTML = dl;
+
+  /* ---- parametric layer ---- */
+  const scaleMax = Math.max(LAYER.exhaust * 1.12, S.loss * 1.12);
+  const pxOf = v => (100 * v / scaleMax).toFixed(2) + '%';
+  const payout = Math.min(Math.max(S.loss - LAYER.attach, 0), LAYER.exhaust - LAYER.attach);
+  const util = payout / (LAYER.exhaust - LAYER.attach);
+  document.getElementById('tg-track').innerHTML =
+    '<div class="att" style="width:' + pxOf(LAYER.attach) + '"></div>' +
+    '<div class="lay" style="left:' + pxOf(LAYER.attach) + ';width:' + pxOf(LAYER.exhaust - LAYER.attach) + '"></div>' +
+    '<div class="pay" style="left:' + pxOf(LAYER.attach) + ';width:' + pxOf(payout) + '"></div>' +
+    '<div class="mark" style="left:' + pxOf(S.loss) + '"></div>';
+  document.getElementById('tg-ticks').innerHTML =
+    '<div class="tk l" style="left:0"><span class="n">$0</span><span class="c">ground up</span></div>' +
+    '<div class="tk" style="left:' + pxOf(LAYER.attach) + '"><span class="n">' + usdS(LAYER.attach) + '</span><span class="c">attachment</span></div>' +
+    '<div class="tk" style="left:' + pxOf(S.loss) + '"><span class="n">' + usdS(S.loss) + '</span><span class="c">modeled loss</span></div>' +
+    '<div class="tk r" style="left:' + pxOf(LAYER.exhaust) + '"><span class="n">' + usdS(LAYER.exhaust) + '</span><span class="c">exhaustion</span></div>';
+  document.getElementById('tg-tbl').innerHTML =
+    '<tr><th>Term</th><th>Amount</th><th>Basis</th></tr>' +
+    '<tr><td>Layer limit</td><td>' + usd(LAYER.exhaust - LAYER.attach) + '</td><td>xs ' + usdS(LAYER.attach) + '</td></tr>' +
+    '<tr><td>Gross modeled loss</td><td>' + usd(S.loss) + '</td><td>DF-CA-WF v2.1</td></tr>' +
+    '<tr class="sum"><td>Indemnity payable</td><td>' + usd(payout) + '</td><td>' + (util * 100).toFixed(1) + '% of limit</td></tr>';
+
+  /* ---- reconciliation ---- */
+  let blockSum = 0; for (let k = 0; k < NB; k++) blockSum += bLoss[k];
+  let pySum = 0; const top = PY[3]; for (let k = 0; k < top.loss.length; k++) pySum += top.loss[k];
+  let dinsSum = 0; for (let d = 1; d < 5; d++) dinsSum += S.byDins[d].loss;
+  const eq = (a, b) => Math.abs(a - b) / (b || 1) < 1e-6;
+  const rr = (k, v, ok) => '<div class="rr"><span class="k">' + k + '</span><span class="' +
+    (ok ? 'ok' : '') + '">' + v + '</span></div>';
+  document.getElementById('recon').innerHTML =
+    '<span class="lbl">Σ reconciliation</span>' +
+    rr('Cell-level sum', usd(S.loss), true) +
+    rr('Σ land-class subtotals', usd(sumLoss), eq(sumLoss, S.loss)) +
+    rr('Σ DINS categories', usd(dinsSum), eq(dinsSum, S.loss)) +
+    rr('Σ 25 m blocks', usd(blockSum), eq(blockSum, S.loss)) +
+    rr('Σ 200 m pyramid', usd(pySum), eq(pySum, S.loss)) +
+    '<div class="rr" style="border-top:1px solid var(--gray-300);margin-top:6px;padding-top:7px">' +
+    '<span class="k">Agreement</span><span class="ok">' +
+    (eq(sumLoss, S.loss) && eq(dinsSum, S.loss) && eq(blockSum, S.loss) && eq(pySum, S.loss)
+      ? 'identical to 1e-6' : 'divergent — investigate') + '</span></div>';
+
+  document.getElementById('prose-recon').innerHTML =
+    'This run used seed <span class="mono">' + SEED_HEX + '</span>. It produced ' +
+    num(N_ANALYSIS) + ' analysis cells, ' + num(S.exposedCells) + ' of them carrying value, ' +
+    'and classified ' + num(S.burnedCells) + ' as burned — ' +
+    NF.format(Math.round(acres(S.burnedCells))) + ' acres. Summed at the cell, at the 25 m block, ' +
+    'at the 200 m aggregate, by land class and by DINS category, the loss is the same number: ' +
+    '<span class="mono">' + usd(S.loss) + '</span>.';
+
+  document.getElementById('foot-l').textContent =
+    'Σ over ' + num(N_ANALYSIS) + ' analysis cells · ' + num(NB) + ' blocks · ' +
+    num(S.structures) + ' inventoried structures · seed ' + SEED_HEX + ' · mulberry32 + value-noise · reproducible';
+}
+
+/* ============================================================== BOOT === */
+function bindUI(){
+  const rs = document.getElementById('risk-note');
+  rs.value = PORTFOLIO.key;
+  rs.onchange = () => {
+    location.hash = rs.value;
+    location.reload();
+  };
+  const bb = document.getElementById('btn-burn');
+  bb.style.display = PORTFOLIO.key === 'srn3' ? 'none' : '';
+  bb.onclick = () => {
+    SHOW_BURN = !SHOW_BURN;
+    bb.setAttribute('aria-pressed', SHOW_BURN);
+    renderLegend(); draw();
+  };
+}
+
+const T0 = performance.now();
+function step(msg, fn){
+  return new Promise(res => {
+    document.getElementById('loadmsg').textContent = msg;
+    // timer rather than rAF: rAF is throttled in background/offscreen contexts
+    // and the boot must complete whether or not frames are being served
+    setTimeout(() => { fn(); res(); }, 24);
+  });
+}
+(async function boot(){
+  document.getElementById('portfolio-title').textContent = PORTFOLIO.carrier + ' exposure';
+  document.getElementById('portfolio-subtitle').textContent =
+    PORTFOLIO.note + ' · ' + PORTFOLIO.treaty + ' · ' +
+    (PORTFOLIO.key === 'srn3' ? 'Mill Valley · Marin County homes' : 'Berkeley Hills homes');
+  document.getElementById('foot-r').textContent =
+    'Synthetic ' + PORTFOLIO.carrier + ' portfolio estimate' +
+    (PORTFOLIO.key === 'srn3' ? ' · no modeled wildfire event' : ' and event data · values and burn footprint are generated, not observed') +
+    ' · wireframe for structural review only';
+  document.querySelector('.loading .t').textContent = 'Estimating ' + PORTFOLIO.carrier + ' exposure';
+  if (typeof L === 'undefined'){
+    document.getElementById('loadmsg').textContent = 'Leaflet failed to load — map unavailable.';
+    const w = document.getElementById('warnbar');
+    w.className = 'warnbar on';
+    w.textContent = 'LEAFLET UNAVAILABLE — the mapping library could not be fetched from unpkg.com. '
+      + 'The exposure raster and loss computation still run; the map surface does not.';
+  }
+  let rnd;
+  await step('rasterising burn footprint at 5 m…', buildBurnMask);
+  await step('classifying ' + num(NB) + ' aggregation blocks…', () => { rnd = genBlocks(); });
+  await step('placing structure inventory…', () => genStructures(rnd));
+  await step('evaluating ' + num(N_ANALYSIS) + ' analysis cells…', genCells);
+  await step('building aggregation pyramid…', buildPyramid);
+  await step('rendering…', () => {
+    if (typeof L !== 'undefined'){ initMap(); renderLegend(); }
+    renderTerms();
+    renderSignals();
+    renderDamage();
+    bindUI();
+    if (typeof L !== 'undefined'){ sizeCanvas(); draw(); }
+    document.getElementById('loading').style.display = 'none';
+    console.log('[euclid] generated in ' + (performance.now() - T0).toFixed(0) + ' ms',
+                { cells: N_ANALYSIS, blocks: NB, structures: ST.n, loss: STATS.loss });
+  });
+})();
+</script>
+</body>
+</html>
