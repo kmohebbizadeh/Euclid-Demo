@@ -34,6 +34,25 @@ body{
   line-height:1.45;
   -webkit-font-smoothing:antialiased;
 }
+.login-screen{position:fixed;inset:0;z-index:5000;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;background:var(--gray-50);}
+.login-card{width:min(420px,100%);background:var(--white);border:1px solid var(--gray-300);border-radius:2px;
+  box-shadow:0 12px 36px rgba(11,27,51,.08);padding:30px 32px 32px;}
+.login-brand{display:flex;align-items:baseline;gap:11px;padding-bottom:17px;margin-bottom:23px;border-bottom:1px solid var(--gray-300);}
+.login-brand .mark{font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--navy-900);}
+.login-brand .rule{width:1px;height:14px;background:var(--gray-300);}
+.login-brand .sub{font-size:11px;color:var(--gray-500);}
+.login-card h1{font-family:'Source Serif 4',Georgia,serif;font-size:25px;font-weight:600;color:var(--navy-900);margin:0 0 6px;}
+.login-card .intro{font-size:12px;color:var(--gray-500);margin:0 0 21px;}
+.login-field{display:block;margin-bottom:15px;}
+.login-field .lbl{display:block;margin-bottom:6px;}
+.login-field input{width:100%;border:1px solid var(--gray-300);border-radius:2px;background:var(--white);color:var(--ink);
+  padding:10px 11px;font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none;}
+.login-field input:focus{border-color:var(--navy-500);box-shadow:0 0 0 2px rgba(31,78,140,.10);}
+.login-button{width:100%;border:1px solid var(--navy-500);border-radius:2px;background:var(--navy-500);color:var(--white);
+  padding:10px 14px;font-family:'Archivo',sans-serif;font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;}
+.login-button:hover{background:var(--navy-700);border-color:var(--navy-700);}
+.login-error{min-height:18px;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--burn);}
+.login-demo{margin-top:15px;padding-top:13px;border-top:1px solid var(--gray-100);font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--gray-500);}
 .mono{font-family:'IBM Plex Mono','SFMono-Regular',Menlo,monospace;font-variant-numeric:tabular-nums;}
 .serif{font-family:'Source Serif 4',Georgia,serif;font-weight:400;}
 
@@ -53,7 +72,8 @@ body{
   padding-bottom:14px;margin-bottom:20px;
   border-bottom:1px solid var(--gray-300);
 }
-.brand{display:flex;align-items:baseline;gap:12px;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand .logo{display:block;width:82px;height:auto;object-fit:contain;}
 .brand .mark{
   font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--navy-900);
 }
@@ -349,6 +369,9 @@ table.data tr.sum td:first-child{font-weight:600;}
 .foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gray-500);
   border-top:1px solid var(--gray-300);padding-top:12px;margin-top:4px;}
+.logout-button{border:1px solid var(--gray-300);border-radius:2px;background:var(--white);color:var(--navy-700);
+  padding:5px 10px;font-family:'Archivo',sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;cursor:pointer;}
+.logout-button:hover{border-color:var(--navy-500);background:var(--gray-50);}
 
 @media (max-width:1100px){
   .map-wrap{grid-template-columns:1fr;}
@@ -370,10 +393,22 @@ table.data tr.sum td:first-child{font-weight:600;}
 </style>
 </head>
 <body>
-<div class="shell">
+<div class="login-screen" id="login-screen">
+  <form class="login-card" id="login-form" autocomplete="off">
+    <div class="login-brand"><span class="mark">Euclid Labs</span><span class="rule"></span><span class="sub">Risk Console</span></div>
+    <p class="intro">Sign in to access the wildfire exposure and loss-determination demo.</p>
+    <label class="login-field"><span class="lbl">Username</span><input id="login-username" name="username" type="text" autocomplete="username" required autofocus></label>
+    <label class="login-field"><span class="lbl">Password</span><input id="login-password" name="password" type="password" autocomplete="current-password" required></label>
+    <button class="login-button" type="submit">Sign in</button>
+    <div class="login-error" id="login-error" role="alert" aria-live="polite"></div>
+    <div class="login-demo">Demo access · session-only authentication</div>
+  </form>
+</div>
+<div class="shell" id="app-shell" style="visibility:hidden">
 
   <div class="topbar">
     <div class="brand">
+      <img class="logo" src="assets/euclid-logo.png" alt="Euclid Labs">
       <span class="mark">Euclid&nbsp;Labs</span>
       <span class="rule"></span>
       <span class="sub">Parametric Wildfire · Loss Determination Console</span>
@@ -565,6 +600,7 @@ table.data tr.sum td:first-child{font-weight:600;}
   <div class="foot">
     <span id="foot-l">—</span>
     <span id="foot-r">Synthetic portfolio estimate and event data · values and burn footprint are generated, not observed · wireframe for structural review only</span>
+    <button class="logout-button" id="logout-button" type="button">Log out</button>
   </div>
 </div>
 
@@ -1904,6 +1940,51 @@ function bindUI(){
   };
 }
 
+function initLogin(){
+  const screen = document.getElementById('login-screen');
+  const shell = document.getElementById('app-shell');
+  const form = document.getElementById('login-form');
+  const username = document.getElementById('login-username');
+  const password = document.getElementById('login-password');
+  const error = document.getElementById('login-error');
+  const logout = document.getElementById('logout-button');
+  let authenticated = false;
+  try { authenticated = sessionStorage.getItem('euclidDemoAuthenticated') === 'true'; } catch (_) {}
+
+  const showApp = () => {
+    screen.style.display = 'none';
+    shell.style.visibility = 'visible';
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      if (map){ map.invalidateSize(); sizeCanvas(); draw(); }
+    }, 0);
+  };
+
+  if (authenticated) showApp();
+  else document.body.style.overflow = 'hidden';
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (username.value === 'EuclidRisk' && password.value === 'Wildfire'){
+      try { sessionStorage.setItem('euclidDemoAuthenticated', 'true'); } catch (_) {}
+      error.textContent = '';
+      showApp();
+    } else {
+      error.textContent = 'Incorrect username or password.';
+      password.value = '';
+      password.focus();
+    }
+  });
+  logout.addEventListener('click', () => {
+    try { sessionStorage.removeItem('euclidDemoAuthenticated'); } catch (_) {}
+    shell.style.visibility = 'hidden';
+    screen.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    form.reset();
+    error.textContent = '';
+    username.focus();
+  });
+}
+
 const T0 = performance.now();
 function step(msg, fn){
   return new Promise(res => {
@@ -1913,6 +1994,7 @@ function step(msg, fn){
     setTimeout(() => { fn(); res(); }, 24);
   });
 }
+initLogin();
 (async function boot(){
   document.getElementById('portfolio-title').textContent = PORTFOLIO.carrier + ' exposure';
   document.getElementById('portfolio-subtitle').textContent =
