@@ -237,20 +237,27 @@ body{
 .signal-row .v{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--navy-900);font-weight:500;text-align:right;}
 
 /* ---------- terms and expected loss ---------- */
-.terms-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));}
+.terms-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));}
 .term{padding:18px 22px 20px;}
 .term + .term{border-left:1px solid var(--gray-300);}
-.term:nth-child(4){border-left:0;}
-.term:nth-child(n+4){border-top:1px solid var(--gray-300);}
+.term:nth-child(5){border-left:0;}
+.term:nth-child(n+5){border-top:1px solid var(--gray-300);}
 .term .value{font-family:'IBM Plex Mono',monospace;font-size:25px;line-height:1.1;color:var(--navy-700);font-weight:500;margin:8px 0 5px;}
 .term .note{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--gray-500);}
 .el-grid{display:block;}
 .el-summary{padding:22px 24px 24px;border-bottom:1px solid var(--gray-300);background:linear-gradient(180deg,#fff 0%,var(--gray-50) 100%);}
-.el-values{display:grid;grid-template-columns:repeat(3,minmax(180px,280px));gap:42px;margin-top:14px;align-items:start;}
+.el-values{display:grid;grid-template-columns:repeat(3,minmax(210px,1fr));gap:28px;margin-top:14px;align-items:stretch;max-width:1100px;}
 .el-value .n{font-family:'IBM Plex Mono',monospace;font-size:28px;color:var(--navy-700);font-weight:500;margin:5px 0 3px;}
 .el-value .s{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--gray-500);}
+.el-value.paired{border-right:1px solid var(--gray-300);padding-right:28px;}
+.el-pair{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px;}
+.el-pair .n{font-size:25px;margin-top:4px;}
+.el-pair .s{display:block;margin-top:2px;}
+.el-model{display:flex;gap:10px;align-items:baseline;margin-top:16px;padding-top:12px;border-top:1px solid var(--gray-100);font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--gray-500);}
+.el-model b{font-size:12px;font-weight:500;color:var(--navy-700);}
 .el-change{display:inline-block;margin-top:16px;padding:5px 8px;border:1px solid #BCD1C2;background:#F2F7F3;border-radius:2px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#356346;}
-.el-chart{margin-top:22px;padding-top:16px;border-top:1px solid var(--gray-300);max-width:980px;}
+.el-charts{margin-top:22px;padding-top:16px;border-top:1px solid var(--gray-300);max-width:980px;display:grid;gap:24px;}
+.el-chart + .el-chart{padding-top:20px;border-top:1px solid var(--gray-300);}
 .el-chart-head{display:flex;justify-content:space-between;gap:20px;align-items:baseline;margin-bottom:8px;}
 .el-chart-head .progress{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--gray-500);}
 .el-chart svg{display:block;width:100%;height:auto;overflow:visible;}
@@ -258,8 +265,18 @@ body{
 .el-chart .axis-text{font-family:'IBM Plex Mono',monospace;font-size:9px;fill:var(--gray-500);}
 .el-chart .area{fill:rgba(31,78,140,.08);}
 .el-chart .line{fill:none;stroke:var(--navy-500);stroke-width:2;stroke-linejoin:round;stroke-linecap:round;}
+.el-chart .line.remaining{stroke:var(--burn);}
+.el-chart .line.underwriting{stroke:var(--gray-500);stroke-width:1.6;stroke-dasharray:5 5;}
 .el-chart .point{fill:var(--white);stroke:var(--navy-500);stroke-width:1.6;}
 .el-chart .point.current{fill:var(--navy-500);}
+.el-chart .current-line{stroke:var(--gray-500);stroke-width:1;stroke-dasharray:4 4;}
+.el-chart-legend{display:flex;gap:18px;flex-wrap:wrap;margin:8px 0 2px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gray-500);}
+.el-chart-legend span{display:flex;align-items:center;gap:6px;}
+.el-chart-legend i{display:inline-block;width:18px;height:2px;background:var(--navy-500);}
+.el-chart-legend i.remaining{background:var(--burn);}
+.el-chart-legend i.underwriting{background:var(--gray-500);}
+.el-chart .elapsed{fill:rgba(107,118,132,.10);}
+.el-chart .annotation{font-family:'IBM Plex Mono',monospace;font-size:9px;fill:var(--navy-700);}
 .deal-progress{height:5px;background:var(--gray-100);border:1px solid var(--gray-300);margin-top:7px;max-width:980px;}
 .deal-progress i{display:block;height:100%;width:37.5%;background:var(--navy-500);}
 .development{padding:22px 24px 24px;}
@@ -393,6 +410,7 @@ table.data tr.sum td:first-child{font-weight:600;}
   .term:nth-child(odd){border-left:0;}
   .term:nth-child(n+3){border-top:1px solid var(--gray-300);}
   .el-values{grid-template-columns:1fr;gap:16px;}
+  .el-value.paired{border-right:0;padding-right:0;padding-bottom:16px;border-bottom:1px solid var(--gray-300);}
 }
 </style>
 </head>
@@ -439,10 +457,12 @@ table.data tr.sum td:first-child{font-weight:600;}
     <div class="terms-grid">
       <div class="term"><span class="lbl">Attachment point</span><div class="value" id="term-attach">—</div><div class="note">per occurrence</div></div>
       <div class="term"><span class="lbl">Limit</span><div class="value" id="term-limit">—</div><div class="note">single-event principal at risk</div></div>
-      <div class="term"><span class="lbl">Collateral yield</span><div class="value" id="term-collateral">—</div><div class="note">reference collateral return</div></div>
-      <div class="term"><span class="lbl">Insurance risk spread</span><div class="value" id="term-spread">—</div><div class="note">expected loss + investor risk margin</div></div>
-      <div class="term"><span class="lbl">Total return</span><div class="value" id="term-return">—</div><div class="note">collateral yield + risk spread</div></div>
-      <div class="term"><span class="lbl" id="term-last-label">Claims damages paid out</span><div class="value" id="term-claims">—</div><div class="note" id="term-last-note">linked to modeled damage value</div></div>
+      <div class="term"><span class="lbl">Collateral yield</span><div class="value" id="term-collateral">—</div><div class="note">current collateral return</div></div>
+      <div class="term"><span class="lbl">Insurance risk spread</span><div class="value" id="term-spread">—</div><div class="note">risk margin</div></div>
+      <div class="term"><span class="lbl">Underwriting expected loss</span><div class="value" id="term-uw-el">—</div><div class="note">annualized · percentage of limit</div></div>
+      <div class="term"><span class="lbl">Total return</span><div class="value" id="term-return">—</div><div class="note">collateral yield + insurance risk spread − expected loss</div></div>
+      <div class="term"><span class="lbl">Term remaining</span><div class="value" id="term-remaining">—</div><div class="note" id="term-dates">—</div></div>
+      <div class="term"><span class="lbl" id="term-last-label">Damages payout</span><div class="value" id="term-claims">—</div><div class="note" id="term-last-note">linked to modeled damage value</div></div>
     </div>
   </section>
 
@@ -451,22 +471,31 @@ table.data tr.sum td:first-child{font-weight:600;}
     <div class="tile-hd">
       <div class="left">
         <span class="tile-index mono">02</span>
-        <span class="tile-title">Current expected loss</span>
-        <span class="lbl">August 2026 · Updated risk view</span>
+        <span class="tile-title">Expected loss</span>
+        <span class="lbl" id="el-updated">September 2026 · Updated risk view</span>
       </div>
     </div>
     <div class="el-grid">
       <div class="el-summary">
         <span class="lbl">Expected loss comparison</span>
         <div class="el-values">
-          <div class="el-value"><span class="lbl">At underwriting</span><div class="n" id="el-original">—</div><div class="s">percentage of limit</div></div>
-          <div class="el-value"><span class="lbl">Current expected loss</span><div class="n" id="el-current">—</div><div class="s">percentage of limit · August 2026</div></div>
-          <div class="el-value"><span class="lbl">Model vendor</span><div class="n" style="font-size:20px">Verisk</div><div class="s">Wildfire Model for the U.S. v4.0.0<br>last updated August 28, 2026</div></div>
+          <div class="el-value paired"><span class="lbl">EL at underwriting</span><div class="el-pair"><div><span class="s">Annualized</span><div class="n" id="el-original">—</div></div><div><span class="s">Total note</span><div class="n" id="el-original-total">—</div></div></div></div>
+          <div class="el-value paired"><span class="lbl">Current EL</span><div class="el-pair"><div><span class="s">Annualized</span><div class="n" id="el-current">—</div></div><div><span class="s">Total note</span><div class="n" id="el-total">—</div></div></div></div>
+          <div class="el-value"><span class="lbl">Current EL remaining</span><div class="n" id="el-remaining">—</div><div class="s">monthly seasonality-adjusted runoff</div></div>
         </div>
-        <div class="el-chart">
-          <div class="el-chart-head"><span class="lbl">Expected loss history · monthly</span><span class="progress">month 9 of 24 · 15 months remaining</span></div>
-          <svg id="el-chart-svg" viewBox="0 0 900 190" role="img" aria-label="Monthly expected loss history"></svg>
-          <div class="deal-progress" aria-hidden="true"><i></i></div>
+        <div class="el-model"><span class="lbl">Model vendor</span><b>Verisk</b><span>Wildfire Model for the U.S. v4.0.0 · last updated August 28, 2026</span></div>
+        <div class="el-charts">
+          <div class="el-chart">
+            <div class="el-chart-head"><span class="lbl">Monthly EL remaining over note term</span><span class="progress" id="el-progress">—</span></div>
+            <div class="el-chart-legend"><span><i class="underwriting"></i>At underwriting</span><span><i class="remaining"></i>Current</span><span>Gray field · elapsed term</span></div>
+            <svg id="el-runoff-svg" viewBox="0 0 900 210" role="img" aria-label="Monthly expected loss remaining at underwriting and current over the note term"></svg>
+            <div class="deal-progress" aria-hidden="true"><i></i></div>
+          </div>
+          <div class="el-chart">
+            <div class="el-chart-head"><span class="lbl">Change in total EL to date</span><span class="progress">quarterly macro-factor updates</span></div>
+            <div class="el-chart-legend"><span><i></i>Total EL</span><span>Mitigation lowers EL · wind and weather danger raise EL</span></div>
+            <svg id="el-change-svg" viewBox="0 0 900 210" role="img" aria-label="Quarterly change in total expected loss from mitigation, wind, and weather factors"></svg>
+          </div>
         </div>
         <div class="el-change" id="el-change">—</div>
       </div>
@@ -631,17 +660,18 @@ table.data tr.sum td:first-child{font-weight:600;}
 const SEED = 0x45554331;                       // "EUC1"
 const SEED_HEX = '0x' + SEED.toString(16).toUpperCase();
 const RISK_KEY = location.hash === '#srn3' ? 'srn3' : location.hash === '#srn2' ? 'srn2' : 'srn1';
+const AS_OF = new Date(Date.UTC(2026, 8, 1));
 const PORTFOLIO = RISK_KEY === 'srn3'
   ? { key:'srn3', note:'SRN 3', treaty:'TRTY-CAWF-2026-03', carrier:'Marin residential', sample:'22%',
-      attachment:20e6, limit:25e6, collateral:'3.75%', spread:'10.25%', totalReturn:'14.00%', uwEL:550e3, currentEL:662.5e3,
-      elHistory:[2.20,2.18,2.24,2.29,2.35,2.41,2.48,2.56,2.65] }
+      attachment:20e6, limit:25e6, collateralRate:3.75, riskSpread:7.60, uwEL:550e3, currentEL:662.5e3,
+      start:'2026-04-01', end:'2027-09-30', quarterlyEL:[2.20,1.95,2.65] }
   : RISK_KEY === 'srn2'
   ? { key:'srn2', note:'SRN 2', treaty:'TRTY-CAWF-2026-02', carrier:'State Farm', sample:'18%',
-      attachment:9e6, limit:30e6, collateral:'3.75%', spread:'15.75%', totalReturn:'19.50%', uwEL:1.122e6, currentEL:1.044e6,
-      elHistory:[3.74,3.69,3.77,3.62,3.58,3.44,3.51,3.55,3.48] }
+      attachment:9e6, limit:30e6, collateralRate:3.75, riskSpread:12.27, uwEL:1.122e6, currentEL:1.044e6,
+      start:'2025-10-01', end:'2028-09-30', quarterlyEL:[3.74,3.46,3.31,3.40,3.48] }
   : { key:'srn1', note:'SRN 1', treaty:'TRTY-CAWF-2026-01', carrier:'FAIR Plan', sample:'20%',
-      attachment:30e6, limit:35e6, collateral:'3.75%', spread:'5.65%', totalReturn:'9.40%', uwEL:385e3, currentEL:350e3,
-      elHistory:[1.10,1.08,1.12,1.07,1.04,0.98,1.02,1.03,1.00] };
+      attachment:30e6, limit:35e6, collateralRate:3.75, riskSpread:4.65, uwEL:385e3, currentEL:350e3,
+      start:'2026-01-01', end:'2027-12-31', quarterlyEL:[1.10,0.94,0.90,1.00] };
 
 function mulberry32(a){
   return function(){
@@ -1435,6 +1465,7 @@ function draw(){
   for (let i = i0; i <= i1 + 1; i++) px[i - i0] = map.latLngToContainerPoint([LAT0, lonOfX(i * cellM)]).x;
   for (let j = j0; j <= j1 + 1; j++) py[j - j0] = map.latLngToContainerPoint([latOfY(j * cellM), BBOX.w]).y;
 
+  drawPropertyExposure(bnds);
   if (cellM === A_RES) drawAnalysis(i0, i1, j0, j1, px, py);
   else                 drawAggregate(LEVEL_OF[cellM], i0, i1, j0, j1, px, py);
 
@@ -1447,7 +1478,7 @@ function paintExposure(g, v, p99, x, y, w, h){
   if (v <= 0) return;                                  // zero exposure → transparent
   const t = Math.pow(Math.min(1, v / p99), 0.55);
   const shade = Math.round(112 - 38 * t);
-  g.fillStyle = 'rgba(' + shade + ',' + shade + ',' + shade + ',0.78)';
+  g.fillStyle = 'rgba(' + shade + ',' + shade + ',' + shade + ',0.45)';
   // Aggregated cells can span 25–200 m. Draw a compact home marker rather
   // than implying that the entire display cell is insured.
   const insetX = w > 5 ? w * 0.28 : 0;
@@ -1460,8 +1491,64 @@ function paintBurn(g, burnFrac, x, y, w, h){
     g.fillRect(x, y, w, h);
   }
 }
+function nearestStreetSegment(la, lo){
+  let best = null, bestD = Infinity;
+  for (const street of FB_STREETS){
+    for (let i = 0; i < street.p.length - 1; i++){
+      const a = street.p[i], b = street.p[i + 1];
+      const d = segDistM(la, lo, a, b);
+      if (d < bestD){ bestD = d; best = [a, b]; }
+    }
+  }
+  return best;
+}
+function drawPropertyExposure(bounds){
+  const g = ctx;
+  for (let s = 0; s < ST.n; s++){
+    const b = ST.blk[s];
+    if (!portfolioStructure(s, b)) continue;
+    const bi = b % NBX, bj = (b / NBX) | 0;
+    const I = bi * SUB + ST.fx[s], J = bj * SUB + ST.fy[s];
+    const west = lonOfX(I * A_RES), east = lonOfX((I + ST.fw[s]) * A_RES);
+    const south = latOfY(J * A_RES), north = latOfY((J + ST.fh[s]) * A_RES);
+    if (east < bounds.getWest() || west > bounds.getEast() || north < bounds.getSouth() || south > bounds.getNorth()) continue;
+    const cxM = (I + ST.fw[s] / 2) * A_RES, cyM = (J + ST.fh[s] / 2) * A_RES;
+    const la = latOfY(cyM), lo = lonOfX(cxM);
+    const c = map.latLngToContainerPoint([la, lo]);
+    const east10 = map.latLngToContainerPoint([la, lonOfX(cxM + 10)]);
+    const pxPerM = Math.max(0.01, Math.abs(east10.x - c.x) / 10);
+    const frontageM = 14 + 6 * hash2i(s, b, S_FAIR ^ 0x50415243);
+    const depthM = 24 + 9 * hash2i(s + 97, b, S_FAIR ^ 0x4C4F5453);
+    const frontage = Math.max(3.4, frontageM * pxPerM);
+    const depth = Math.max(5.0, depthM * pxPerM);
+    const seg = nearestStreetSegment(la, lo);
+    let angle = 0;
+    if (seg){
+      const pa = map.latLngToContainerPoint(seg[0]), pb = map.latLngToContainerPoint(seg[1]);
+      angle = Math.atan2(pb.y - pa.y, pb.x - pa.x);
+    }
+    const shade = 76;
+    g.save();
+    g.translate(c.x, c.y);
+    g.rotate(angle);
+    // The translucent rectangle represents the approximate insured parcel:
+    // narrow frontage parallel to the nearest mapped road, with lot depth
+    // extending away from it. The darker core is the modeled home footprint.
+    g.fillStyle = 'rgba(' + shade + ',' + shade + ',' + shade + ',0.45)';
+    g.fillRect(-frontage / 2, -depth / 2, frontage, depth);
+    g.strokeStyle = 'rgba(64,64,64,0.45)';
+    g.lineWidth = 0.75;
+    g.strokeRect(-frontage / 2, -depth / 2, frontage, depth);
+    const houseW = Math.max(2.5, Math.min(frontage * 0.68, ST.fw[s] * A_RES * pxPerM));
+    const houseH = Math.max(2.5, Math.min(depth * 0.48, ST.fh[s] * A_RES * pxPerM));
+    g.strokeStyle = 'rgba(32,32,32,0.45)';
+    g.lineWidth = 0.55;
+    g.strokeRect(-houseW / 2, -houseH / 2, houseW, houseH);
+    g.restore();
+  }
+}
 function drawAggregate(L, i0, i1, j0, j1, px, py){
-  const P = PY[L], g = ctx, p99 = P99[L];
+  const P = PY[L], g = ctx;
   for (let j = j0; j <= j1; j++){
     if (j >= P.ny) continue;
     const yTop = py[j + 1 - j0], yBot = py[j - j0];
@@ -1470,7 +1557,6 @@ function drawAggregate(L, i0, i1, j0, j1, px, py){
       if (i >= P.nx) continue;
       const k = j * P.nx + i;
       const x = px[i - i0], w = Math.max(1, px[i + 1 - i0] - x);
-      paintExposure(g, P.exp[k], p99, x, yTop, w, h);
       if (SHOW_BURN) paintBurn(g, P.burn[k] / P.per, x, yTop, w, h);
     }
   }
@@ -1484,7 +1570,6 @@ function drawAnalysis(i0, i1, j0, j1, px, py){
       if (I >= NAX) continue;
       const x = px[I - i0], w = Math.max(1, px[I + 1 - i0] - x);
       evalCell(I, J);
-      paintExposure(g, _val, P99_A, x, yTop, w, h);
       if (SHOW_BURN) paintBurn(g, _burn ? 1 : 0, x, yTop, w, h);
     }
   }
@@ -1560,8 +1645,8 @@ function renderLegend(){
   const el = document.getElementById('legend');
   el.innerHTML =
       '<span class="lbl">Estimated ' + PORTFOLIO.carrier + ' exposure</span>' +
-      '<div class="swatchrow"><span class="swatch" style="background:rgba(78,78,78,.78)"></span>' +
-      '<span>Selected home<span class="mono"> · ' + PORTFOLIO.sample + ' sample</span></span></div>' +
+      '<div class="swatchrow"><span class="swatch" style="background:rgba(76,76,76,.45)"></span>' +
+      '<span>Estimated insured parcel + home<span class="mono"> · ' + PORTFOLIO.sample + ' sample</span></span></div>' +
       '<div class="swatchrow"><span class="swatch" style="background:transparent;background-image:' +
       'linear-gradient(45deg,#EDEFF3 25%,transparent 25%,transparent 75%,#EDEFF3 75%),' +
       'linear-gradient(45deg,#EDEFF3 25%,transparent 25%,transparent 75%,#EDEFF3 75%);' +
@@ -1678,37 +1763,105 @@ const EVENT = { id:'EVT-2026-0814-BRK', name:'Claremont Canyon Fire', ignition:'
                 contained:'2026-08-19 11:00 PDT', capture:'2026-08-19 · Sentinel-2 L2A' };
 const CLASS_SWATCH = ['#EDEFF3', '#12325C', '#1F4E8C', '#C3D3E6', '#F7F8FA', '#E2E7EE'];
 
-function renderELChart(){
-  const values = PORTFOLIO.elHistory;
-  const months = ['Dec 25','Jan 26','Feb 26','Mar 26','Apr 26','May 26','Jun 26','Jul 26','Aug 26'];
-  const x0 = 58, x1 = 874, y0 = 14, y1 = 142;
-  const rawMin = Math.min.apply(null, values), rawMax = Math.max.apply(null, values);
-  const pad = Math.max(0.05, (rawMax - rawMin) * 0.35);
-  const lo = Math.max(0, rawMin - pad), hi = rawMax + pad;
-  const x = i => x0 + (x1 - x0) * i / (values.length - 1);
+function parseISODate(s){
+  const p = s.split('-').map(Number);
+  return new Date(Date.UTC(p[0], p[1] - 1, p[2]));
+}
+function monthDiff(a, b){
+  return (b.getUTCFullYear() - a.getUTCFullYear()) * 12 + b.getUTCMonth() - a.getUTCMonth();
+}
+function addMonths(d, n){ return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + n, 1)); }
+function seasonalRunoff(start, totalMonths, annualRate){
+  const season = [0.08,0.08,0.10,0.18,0.45,1.20,2.40,2.90,2.80,1.55,0.20,0.06];
+  const mean = season.reduce((a, b) => a + b, 0) / 12;
+  const runoff = new Array(totalMonths + 1).fill(0);
+  for (let i = totalMonths - 1; i >= 0; i--){
+    const d = addMonths(start, i);
+    runoff[i] = runoff[i + 1] + annualRate * (season[d.getUTCMonth()] / mean) / 12;
+  }
+  return runoff;
+}
+function termMetrics(p){
+  const start = parseISODate(p.start), end = parseISODate(p.end);
+  const endExclusive = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth() + 1, 1));
+  const totalMonths = monthDiff(start, endExclusive);
+  const elapsedMonths = Math.max(0, Math.min(totalMonths, monthDiff(start, AS_OF) + 1));
+  const remainingMonths = totalMonths - elapsedMonths;
+  const annualRate = 100 * p.currentEL / p.limit;
+  const underwritingRate = 100 * p.uwEL / p.limit;
+  const totalRate = annualRate * totalMonths / 12;
+  // California seasonality makes the remaining hazard run off rapidly through
+  // summer and early autumn and much more slowly during the wetter months.
+  const currentRunoff = seasonalRunoff(start, totalMonths, annualRate);
+  const underwritingRunoff = seasonalRunoff(start, totalMonths, underwritingRate);
+  return { start, end, totalMonths, elapsedMonths, remainingMonths, annualRate, underwritingRate, totalRate,
+           remainingRate:currentRunoff[elapsedMonths], currentRunoff, underwritingRunoff };
+}
+function shortMonth(d){ return d.toLocaleDateString('en-US',{month:'short',year:'2-digit',timeZone:'UTC'}); }
+function fullDate(d){ return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}); }
+
+function renderRunoffChart(m){
+  const n = m.totalMonths;
+  const hi = Math.max(m.underwritingRunoff[0], m.currentRunoff[0]) * 1.10, lo = 0;
+  const x0 = 58, x1 = 874, y0 = 16, y1 = 156;
+  const x = i => x0 + (x1 - x0) * i / n;
   const y = v => y1 - (v - lo) / (hi - lo) * (y1 - y0);
-  const pts = values.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+  const uwPts = m.underwritingRunoff.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+  const currentPts = m.currentRunoff.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
   let h = '';
-  for (let t = 0; t < 3; t++){
-    const v = hi - (hi - lo) * t / 2, yy = y(v);
+  h += '<rect class="elapsed" x="' + x0 + '" y="' + y0 + '" width="' + (x(m.elapsedMonths) - x0).toFixed(1) + '" height="' + (y1 - y0) + '"></rect>';
+  for (let t = 0; t < 4; t++){
+    const v = hi * (3 - t) / 3, yy = y(v);
     h += '<line class="grid" x1="' + x0 + '" y1="' + yy.toFixed(1) + '" x2="' + x1 + '" y2="' + yy.toFixed(1) + '"></line>' +
       '<text class="axis-text" x="0" y="' + (yy + 3).toFixed(1) + '">' + v.toFixed(2) + '%</text>';
   }
-  const baseY = y(values[0]);
-  h += '<line x1="' + x0 + '" y1="' + baseY.toFixed(1) + '" x2="' + x1 + '" y2="' + baseY.toFixed(1) + '" stroke="#6B7684" stroke-width="1" stroke-dasharray="5 5"></line>' +
-    '<polygon class="area" points="' + x0 + ',' + y1 + ' ' + pts + ' ' + x1 + ',' + y1 + '"></polygon>' +
-    '<polyline class="line" points="' + pts + '"></polyline>';
+  h += '<polyline class="line underwriting" points="' + uwPts + '"></polyline>' +
+       '<polyline class="line remaining" points="' + currentPts + '"></polyline>' +
+       '<line class="current-line" x1="' + x(m.elapsedMonths).toFixed(1) + '" y1="' + y0 + '" x2="' + x(m.elapsedMonths).toFixed(1) + '" y2="' + y1 + '"></line>';
+  const labelStep = n > 24 ? 6 : 3;
+  for (let i = 0; i <= n; i += labelStep){
+    h += '<text class="axis-text" text-anchor="middle" x="' + x(i).toFixed(1) + '" y="181">' + shortMonth(addMonths(m.start, i)) + '</text>';
+  }
+  h += '<circle cx="' + x(m.elapsedMonths).toFixed(1) + '" cy="' + y(m.currentRunoff[m.elapsedMonths]).toFixed(1) + '" r="3.5" fill="#A33A28"></circle>' +
+       '<text class="axis-text" text-anchor="middle" x="' + x(m.elapsedMonths).toFixed(1) + '" y="202">CURRENT</text>';
+  document.getElementById('el-runoff-svg').innerHTML = h;
+}
+
+function renderTotalELChart(m){
+  const p = PORTFOLIO, n = p.quarterlyEL.length;
+  const values = p.quarterlyEL.map(v => v * m.totalMonths / 12);
+  const rawLo = Math.min.apply(null, values), rawHi = Math.max.apply(null, values);
+  const pad = Math.max(0.08, (rawHi - rawLo) * 0.35);
+  const lo = Math.max(0, rawLo - pad), hi = rawHi + pad;
+  const x0 = 58, x1 = 874, y0 = 16, y1 = 156;
+  const x = i => x0 + (x1 - x0) * i / (n - 1);
+  const y = v => y1 - (v - lo) / (hi - lo) * (y1 - y0);
+  const pts = values.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+  let h = '';
+  for (let t = 0; t < 4; t++){
+    const v = hi - (hi - lo) * t / 3, yy = y(v);
+    h += '<line class="grid" x1="' + x0 + '" y1="' + yy.toFixed(1) + '" x2="' + x1 + '" y2="' + yy.toFixed(1) + '"></line>' +
+      '<text class="axis-text" x="0" y="' + (yy + 3).toFixed(1) + '">' + v.toFixed(2) + '%</text>';
+  }
+  h += '<polyline class="line" points="' + pts + '"></polyline>';
   values.forEach((v, i) => {
-    h += '<circle class="point' + (i === values.length - 1 ? ' current' : '') + '" cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="3.5"></circle>' +
-      '<text class="axis-text" text-anchor="middle" x="' + x(i).toFixed(1) + '" y="166">' + months[i] + '</text>';
+    h += '<circle class="point' + (i === n - 1 ? ' current' : '') + '" cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="3.5"></circle>' +
+      '<text class="axis-text" text-anchor="middle" x="' + x(i).toFixed(1) + '" y="181">' + shortMonth(addMonths(m.start, i * 3)) + '</text>';
   });
-  h += '<text class="axis-text" text-anchor="end" x="' + x1 + '" y="' + (baseY - 6).toFixed(1) + '">underwriting baseline</text>' +
-    '<text class="axis-text" text-anchor="end" x="' + x1 + '" y="181">current ' + values[values.length - 1].toFixed(2) + '%</text>';
-  document.getElementById('el-chart-svg').innerHTML = h;
+  const minIndex = values.indexOf(rawLo);
+  h += '<text class="annotation" text-anchor="middle" x="' + x(minIndex).toFixed(1) + '" y="' + Math.max(12, y(rawLo) - 10).toFixed(1) + '">MITIGATION</text>' +
+       '<text class="annotation" text-anchor="end" x="' + x(n - 1).toFixed(1) + '" y="' + Math.max(12, y(values[n - 1]) - 10).toFixed(1) + '">WIND + WEATHER</text>';
+  document.getElementById('el-change-svg').innerHTML = h;
+}
+
+function renderELCharts(m){
+  renderRunoffChart(m);
+  renderTotalELChart(m);
 }
 
 function renderTerms(){
   const p = PORTFOLIO;
+  const m = termMetrics(p);
   const uwRate = 100 * p.uwEL / p.limit;
   const currentRate = 100 * p.currentEL / p.limit;
   const change = 100 * (p.currentEL / p.uwEL - 1);
@@ -1716,13 +1869,21 @@ function renderTerms(){
   document.getElementById('terms-id').textContent = p.note + ' · ' + p.treaty;
   document.getElementById('term-attach').textContent = usdS(p.attachment);
   document.getElementById('term-limit').textContent = usdS(p.limit);
-  document.getElementById('term-collateral').textContent = p.collateral;
-  document.getElementById('term-spread').textContent = p.spread;
-  document.getElementById('term-return').textContent = p.totalReturn;
-  document.getElementById('term-last-label').textContent = 'Claims damages paid out';
+  document.getElementById('term-collateral').textContent = p.collateralRate.toFixed(2) + '%';
+  document.getElementById('term-spread').textContent = p.riskSpread.toFixed(2) + '%';
+  document.getElementById('term-uw-el').textContent = uwRate.toFixed(2) + '%';
+  document.getElementById('term-return').textContent = (p.collateralRate + p.riskSpread - currentRate).toFixed(2) + '%';
+  document.getElementById('term-last-label').textContent = 'Damages payout';
   document.getElementById('term-last-note').textContent = 'linked to modeled damage value';
+  document.getElementById('term-remaining').textContent = m.remainingMonths + ' mo';
+  document.getElementById('term-dates').textContent = fullDate(m.start) + ' – ' + fullDate(m.end) + ' · ' + m.totalMonths + ' months total';
   document.getElementById('el-original').textContent = uwRate.toFixed(2) + '%';
+  document.getElementById('el-original-total').textContent = (uwRate * m.totalMonths / 12).toFixed(2) + '%';
   document.getElementById('el-current').textContent = currentRate.toFixed(2) + '%';
+  document.getElementById('el-total').textContent = m.totalRate.toFixed(2) + '%';
+  document.getElementById('el-remaining').textContent = m.remainingRate.toFixed(2) + '%';
+  document.getElementById('el-progress').textContent = 'month ' + m.elapsedMonths + ' of ' + m.totalMonths + ' · ' + m.remainingMonths + ' months remaining';
+  document.querySelector('.deal-progress i').style.width = (100 * m.elapsedMonths / m.totalMonths).toFixed(1) + '%';
   const changeEl = document.getElementById('el-change');
   changeEl.textContent =
     (change >= 0 ? '↑ ' : '↓ ') + Math.abs(change).toFixed(1) + '% since underwriting · ' + Math.abs(bps) + ' bps of limit';
@@ -1744,7 +1905,7 @@ function renderTerms(){
     document.getElementById('weather-impact').textContent =
       'Modeled impact: +25 bps of expected loss, partially offsetting the mitigation benefit. This is a scenario adjustment, not a NOAA loss estimate.';
   }
-  renderELChart();
+  renderELCharts(m);
 }
 
 function riskSignals(){
