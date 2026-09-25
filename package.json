@@ -2,8 +2,9 @@
   "name": "euclid-risk-app",
   "version": "1.0.0",
   "private": true,
-  "description": "Euclid Risk wildfire exposure and loss determination demo",
+  "description": "Euclid Labs structured risk investment platform demo",
   "scripts": {
-    "build": "sh scripts/build.sh"
+    "build": "sh scripts/build.sh",
+    "test": "node scripts/check-demo.cjs"
   }
 }

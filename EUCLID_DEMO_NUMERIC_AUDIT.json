@@ -1,0 +1,1680 @@
+{
+  "assets": [
+    {
+      "key": "srn1",
+      "note": "SRN 1",
+      "treaty": "TRTY-CAWF-2026-01",
+      "carrier": "FAIR Plan",
+      "market": "Berkeley Hills",
+      "location": "Berkeley Hills \u00b7 Alameda County",
+      "sample": "20%",
+      "investment": 3200000,
+      "owned": true,
+      "price": 100.4,
+      "available": 2200000,
+      "attachment": 30000000,
+      "limit": 35000000,
+      "attachmentProbability": 2.4,
+      "collateralRate": 3.75,
+      "riskSpread": 4.65,
+      "uwEL": 385000,
+      "currentEL": 350000,
+      "start": "2026-01-01",
+      "end": "2027-12-31",
+      "quarterlyEL": [
+        1.1,
+        0.94,
+        0.9,
+        1
+      ],
+      "center": [
+        37.893,
+        -122.2575
+      ],
+      "bbox": {
+        "s": 37.846,
+        "w": -122.315,
+        "n": 37.94,
+        "e": -122.2
+      },
+      "noEvent": false,
+      "annualEL": 1,
+      "uwELRateCalc": 1.1,
+      "returnCalc": 7.4,
+      "termMonths": 24,
+      "elapsed": 9,
+      "remaining": 15,
+      "remainingEL": 1.150833333333333,
+      "totalEL": 2,
+      "seasonalTotal": 1.9999999999999993,
+      "currentValue": 3212800,
+      "bidCalc": 100.28,
+      "askCalc": 100.52000000000001,
+      "minimumCalc": 250000,
+      "historyDates": [
+        {
+          "date": "2026-01-01",
+          "value": 1.1,
+          "future": false
+        },
+        {
+          "date": "2026-04-01",
+          "value": 0.94,
+          "future": false
+        },
+        {
+          "date": "2026-07-01",
+          "value": 0.9,
+          "future": false
+        },
+        {
+          "date": "2026-10-01",
+          "value": 1,
+          "future": true
+        }
+      ]
+    },
+    {
+      "key": "srn2",
+      "note": "SRN 2",
+      "treaty": "TRTY-CAWF-2026-02",
+      "carrier": "State Farm",
+      "market": "Berkeley Hills",
+      "location": "Berkeley Hills \u00b7 Alameda County",
+      "sample": "18%",
+      "investment": 4600000,
+      "owned": true,
+      "price": 98.85,
+      "available": 1400000,
+      "attachment": 9000000,
+      "limit": 30000000,
+      "attachmentProbability": 14.8,
+      "collateralRate": 3.75,
+      "riskSpread": 12.27,
+      "uwEL": 1122000,
+      "currentEL": 1044000,
+      "start": "2025-10-01",
+      "end": "2028-09-30",
+      "quarterlyEL": [
+        3.74,
+        3.46,
+        3.31,
+        3.4,
+        3.48
+      ],
+      "center": [
+        37.893,
+        -122.2575
+      ],
+      "bbox": {
+        "s": 37.846,
+        "w": -122.315,
+        "n": 37.94,
+        "e": -122.2
+      },
+      "noEvent": false,
+      "annualEL": 3.48,
+      "uwELRateCalc": 3.74,
+      "returnCalc": 12.54,
+      "termMonths": 36,
+      "elapsed": 12,
+      "remaining": 24,
+      "remainingEL": 6.959999999999998,
+      "totalEL": 10.44,
+      "seasonalTotal": 10.439999999999996,
+      "currentValue": 4547100,
+      "bidCalc": 98.69999999999999,
+      "askCalc": 99,
+      "minimumCalc": 500000,
+      "historyDates": [
+        {
+          "date": "2025-10-01",
+          "value": 3.74,
+          "future": false
+        },
+        {
+          "date": "2026-01-01",
+          "value": 3.46,
+          "future": false
+        },
+        {
+          "date": "2026-04-01",
+          "value": 3.31,
+          "future": false
+        },
+        {
+          "date": "2026-07-01",
+          "value": 3.4,
+          "future": false
+        },
+        {
+          "date": "2026-10-01",
+          "value": 3.48,
+          "future": true
+        }
+      ]
+    },
+    {
+      "key": "srn3",
+      "note": "SRN 3",
+      "treaty": "TRTY-CAWF-2026-03",
+      "carrier": "Marin residential",
+      "market": "Mill Valley",
+      "location": "Mill Valley \u00b7 Marin County",
+      "sample": "22%",
+      "investment": 2400000,
+      "owned": true,
+      "price": 101.2,
+      "available": 2800000,
+      "attachment": 20000000,
+      "limit": 25000000,
+      "attachmentProbability": 6.3,
+      "collateralRate": 3.75,
+      "riskSpread": 7.6,
+      "uwEL": 550000,
+      "currentEL": 662500,
+      "start": "2026-04-01",
+      "end": "2027-09-30",
+      "quarterlyEL": [
+        2.2,
+        1.95,
+        2.65
+      ],
+      "center": [
+        37.91,
+        -122.548
+      ],
+      "bbox": {
+        "s": 37.882,
+        "w": -122.59,
+        "n": 37.942,
+        "e": -122.5
+      },
+      "noEvent": true,
+      "annualEL": 2.65,
+      "uwELRateCalc": 2.2,
+      "returnCalc": 8.7,
+      "termMonths": 18,
+      "elapsed": 6,
+      "remaining": 12,
+      "remainingEL": 2.649999999999999,
+      "totalEL": 3.9749999999999996,
+      "seasonalTotal": 4.8428749999999985,
+      "currentValue": 2428800,
+      "bidCalc": 101.02,
+      "askCalc": 101.38000000000001,
+      "minimumCalc": 250000,
+      "historyDates": [
+        {
+          "date": "2026-04-01",
+          "value": 2.2,
+          "future": false
+        },
+        {
+          "date": "2026-07-01",
+          "value": 1.95,
+          "future": false
+        },
+        {
+          "date": "2026-10-01",
+          "value": 2.65,
+          "future": true
+        }
+      ]
+    },
+    {
+      "key": "srn4",
+      "note": "SRN 4",
+      "treaty": "TRTY-CAWF-2026-04",
+      "carrier": "Sierra residential",
+      "market": "Truckee",
+      "location": "Truckee \u00b7 Nevada County",
+      "sample": "19%",
+      "investment": 1800000,
+      "owned": true,
+      "price": 99.55,
+      "available": 3600000,
+      "attachment": 16000000,
+      "limit": 28000000,
+      "attachmentProbability": 8.9,
+      "collateralRate": 3.75,
+      "riskSpread": 9.4,
+      "uwEL": 700000,
+      "currentEL": 784000,
+      "start": "2026-03-01",
+      "end": "2028-02-29",
+      "quarterlyEL": [
+        2.5,
+        2.22,
+        2.35,
+        2.8
+      ],
+      "center": [
+        39.327,
+        -120.183
+      ],
+      "bbox": {
+        "s": 39.295,
+        "w": -120.25,
+        "n": 39.365,
+        "e": -120.12
+      },
+      "noEvent": true,
+      "annualEL": 2.8,
+      "uwELRateCalc": 2.5,
+      "returnCalc": 10.350000000000001,
+      "termMonths": 24,
+      "elapsed": 7,
+      "remaining": 17,
+      "remainingEL": 3.259666666666666,
+      "totalEL": 5.599999999999999,
+      "seasonalTotal": 5.599999999999999,
+      "currentValue": 1791900,
+      "bidCalc": 99.35,
+      "askCalc": 99.75,
+      "minimumCalc": 100000,
+      "historyDates": [
+        {
+          "date": "2026-03-01",
+          "value": 2.5,
+          "future": false
+        },
+        {
+          "date": "2026-06-01",
+          "value": 2.22,
+          "future": false
+        },
+        {
+          "date": "2026-09-01",
+          "value": 2.35,
+          "future": false
+        },
+        {
+          "date": "2026-12-01",
+          "value": 2.8,
+          "future": true
+        }
+      ]
+    },
+    {
+      "key": "srn5",
+      "note": "SRN 5",
+      "treaty": "TRTY-CAWF-2026-05",
+      "carrier": "Southern California residential",
+      "market": "Los Angeles",
+      "location": "Los Angeles \u00b7 Santa Monica Mountains",
+      "sample": "21%",
+      "investment": 4100000,
+      "owned": true,
+      "price": 97.9,
+      "available": 4300000,
+      "attachment": 12000000,
+      "limit": 40000000,
+      "attachmentProbability": 12.6,
+      "collateralRate": 3.75,
+      "riskSpread": 11.6,
+      "uwEL": 1120000,
+      "currentEL": 1320000,
+      "start": "2025-07-01",
+      "end": "2027-06-30",
+      "quarterlyEL": [
+        2.8,
+        2.62,
+        2.48,
+        2.7,
+        2.92,
+        3.3
+      ],
+      "center": [
+        34.12,
+        -118.47
+      ],
+      "bbox": {
+        "s": 34.06,
+        "w": -118.55,
+        "n": 34.17,
+        "e": -118.41
+      },
+      "noEvent": false,
+      "annualEL": 3.3,
+      "uwELRateCalc": 2.8,
+      "returnCalc": 12.05,
+      "termMonths": 24,
+      "elapsed": 15,
+      "remaining": 9,
+      "remainingEL": 1.0724999999999996,
+      "totalEL": 6.599999999999999,
+      "seasonalTotal": 6.599999999999998,
+      "currentValue": 4013900,
+      "bidCalc": 97.78,
+      "askCalc": 98.02000000000001,
+      "minimumCalc": 250000,
+      "historyDates": [
+        {
+          "date": "2025-07-01",
+          "value": 2.8,
+          "future": false
+        },
+        {
+          "date": "2025-10-01",
+          "value": 2.62,
+          "future": false
+        },
+        {
+          "date": "2026-01-01",
+          "value": 2.48,
+          "future": false
+        },
+        {
+          "date": "2026-04-01",
+          "value": 2.7,
+          "future": false
+        },
+        {
+          "date": "2026-07-01",
+          "value": 2.92,
+          "future": false
+        },
+        {
+          "date": "2026-10-01",
+          "value": 3.3,
+          "future": true
+        }
+      ]
+    },
+    {
+      "key": "srn6",
+      "note": "SRN 6",
+      "treaty": "TRTY-CAWF-2026-06",
+      "carrier": "Napa WUI pool",
+      "market": "Napa Valley",
+      "location": "Napa Valley \u00b7 Napa County",
+      "sample": "20%",
+      "investment": 0,
+      "owned": false,
+      "price": 98.4,
+      "available": 3500000,
+      "attachment": 18000000,
+      "limit": 32000000,
+      "attachmentProbability": 7.4,
+      "collateralRate": 3.75,
+      "riskSpread": 8.7,
+      "uwEL": 768000,
+      "currentEL": 864000,
+      "start": "2026-02-01",
+      "end": "2028-01-31",
+      "quarterlyEL": [
+        2.4,
+        2.18,
+        2.28,
+        2.7
+      ],
+      "center": [
+        38.4,
+        -122.36
+      ],
+      "bbox": {
+        "s": 38.34,
+        "w": -122.43,
+        "n": 38.47,
+        "e": -122.29
+      },
+      "noEvent": false,
+      "marketDamage": 6800000,
+      "annualEL": 2.7,
+      "uwELRateCalc": 2.4,
+      "returnCalc": 9.75,
+      "termMonths": 24,
+      "elapsed": 8,
+      "remaining": 16,
+      "remainingEL": 3.1252499999999994,
+      "totalEL": 5.400000000000001,
+      "seasonalTotal": 5.399999999999999,
+      "currentValue": 0,
+      "bidCalc": 98.25,
+      "askCalc": 98.55000000000001,
+      "minimumCalc": 500000,
+      "historyDates": [
+        {
+          "date": "2026-02-01",
+          "value": 2.4,
+          "future": false
+        },
+        {
+          "date": "2026-05-01",
+          "value": 2.18,
+          "future": false
+        },
+        {
+          "date": "2026-08-01",
+          "value": 2.28,
+          "future": false
+        },
+        {
+          "date": "2026-11-01",
+          "value": 2.7,
+          "future": true
+        }
+      ]
+    },
+    {
+      "key": "srn7",
+      "note": "SRN 7",
+      "treaty": "TRTY-CAWF-2026-07",
+      "carrier": "San Diego residential",
+      "market": "San Diego",
+      "location": "San Diego \u00b7 Coastal foothills",
+      "sample": "18%",
+      "investment": 0,
+      "owned": false,
+      "price": 101.25,
+      "available": 2100000,
+      "attachment": 10000000,
+      "limit": 45000000,
+      "attachmentProbability": 11.2,
+      "collateralRate": 3.75,
+      "riskSpread": 10.85,
+      "uwEL": 1305000,
+      "currentEL": 1417500,
+      "start": "2025-11-01",
+      "end": "2027-10-31",
+      "quarterlyEL": [
+        2.9,
+        2.72,
+        2.8,
+        3.15
+      ],
+      "center": [
+        32.88,
+        -117.09
+      ],
+      "bbox": {
+        "s": 32.82,
+        "w": -117.16,
+        "n": 32.94,
+        "e": -117.02
+      },
+      "noEvent": false,
+      "marketDamage": 14200000,
+      "annualEL": 3.15,
+      "uwELRateCalc": 2.9,
+      "returnCalc": 11.45,
+      "termMonths": 24,
+      "elapsed": 11,
+      "remaining": 13,
+      "remainingEL": 3.5568749999999993,
+      "totalEL": 6.3,
+      "seasonalTotal": 6.299999999999998,
+      "currentValue": 0,
+      "bidCalc": 101.07,
+      "askCalc": 101.43,
+      "minimumCalc": 250000,
+      "historyDates": [
+        {
+          "date": "2025-11-01",
+          "value": 2.9,
+          "future": false
+        },
+        {
+          "date": "2026-02-01",
+          "value": 2.72,
+          "future": false
+        },
+        {
+          "date": "2026-05-01",
+          "value": 2.8,
+          "future": false
+        },
+        {
+          "date": "2026-08-01",
+          "value": 3.15,
+          "future": false
+        }
+      ]
+    },
+    {
+      "key": "srn8",
+      "note": "SRN 8",
+      "treaty": "TRTY-CAWF-2026-08",
+      "carrier": "Ventura County residential",
+      "market": "Ventura County",
+      "location": "Ventura County \u00b7 California",
+      "sample": "20%",
+      "investment": 0,
+      "owned": false,
+      "price": 99.1,
+      "available": 4800000,
+      "attachment": 25000000,
+      "limit": 38000000,
+      "attachmentProbability": 4.8,
+      "collateralRate": 3.75,
+      "riskSpread": 6.9,
+      "uwEL": 608000,
+      "currentEL": 665000,
+      "start": "2026-05-01",
+      "end": "2027-10-31",
+      "quarterlyEL": [
+        1.6,
+        1.48,
+        1.75
+      ],
+      "center": [
+        34.28,
+        -119.08
+      ],
+      "bbox": {
+        "s": 34.22,
+        "w": -119.16,
+        "n": 34.34,
+        "e": -119
+      },
+      "noEvent": true,
+      "marketDamage": 0,
+      "annualEL": 1.75,
+      "uwELRateCalc": 1.6,
+      "returnCalc": 8.9,
+      "termMonths": 18,
+      "elapsed": 5,
+      "remaining": 13,
+      "remainingEL": 1.9760416666666665,
+      "totalEL": 2.625,
+      "seasonalTotal": 3.397916666666666,
+      "currentValue": 0,
+      "bidCalc": 98.89999999999999,
+      "askCalc": 99.3,
+      "minimumCalc": 100000,
+      "historyDates": [
+        {
+          "date": "2026-05-01",
+          "value": 1.6,
+          "future": false
+        },
+        {
+          "date": "2026-08-01",
+          "value": 1.48,
+          "future": false
+        },
+        {
+          "date": "2026-11-01",
+          "value": 1.75,
+          "future": true
+        }
+      ]
+    },
+    {
+      "key": "srp1-senior",
+      "assetType": "SRP",
+      "poolKey": "srp1",
+      "note": "SRP 1 Senior",
+      "treaty": "SRP-CAWF-2026-A \u00b7 Class A",
+      "tranche": "Senior",
+      "rating": "A (demo)",
+      "owned": true,
+      "investment": 4400000,
+      "heldAmount": 4400000,
+      "tradeUnit": "notional",
+      "price": 100.2,
+      "bid": 100.05,
+      "ask": 100.35,
+      "available": 8000000,
+      "minimum": 500000,
+      "originalBalance": 30000000,
+      "currentBalance": 30000000,
+      "attachmentPct": 40,
+      "detachmentPct": 100,
+      "subordinationPct": 40,
+      "currentELRate": 0.35,
+      "uwELRate": 0.42,
+      "impairmentProbability": 0.8,
+      "collateralRate": 3.8,
+      "riskSpread": 3.65,
+      "expectedReturn": 7.1,
+      "coupon": "SOFR + 3.65%",
+      "quoteValidity": "15 min",
+      "triggerSettlement": "7\u201324 days",
+      "annualEL": 0.35,
+      "uwELRateCalc": 0.42,
+      "returnCalc": 7.1,
+      "termMonths": 36,
+      "elapsed": 9,
+      "remaining": 27,
+      "remainingEL": 0.7527916666666664,
+      "totalEL": 1.05,
+      "seasonalTotal": 1.0499999999999996,
+      "currentValue": 4408800,
+      "bidCalc": 100.05,
+      "askCalc": 100.35,
+      "minimumCalc": 500000,
+      "historyDates": []
+    },
+    {
+      "key": "srp1-junior",
+      "assetType": "SRP",
+      "poolKey": "srp1",
+      "note": "SRP 1 Junior",
+      "treaty": "SRP-CAWF-2026-A \u00b7 Class B",
+      "tranche": "Junior",
+      "rating": "BB (demo)",
+      "owned": false,
+      "investment": 0,
+      "heldAmount": 0,
+      "tradeUnit": "notional",
+      "price": 98.75,
+      "bid": 98.4,
+      "ask": 99.1,
+      "available": 4000000,
+      "minimum": 250000,
+      "originalBalance": 12000000,
+      "currentBalance": 12000000,
+      "attachmentPct": 16,
+      "detachmentPct": 40,
+      "subordinationPct": 16,
+      "currentELRate": 2.4,
+      "uwELRate": 2.18,
+      "impairmentProbability": 5.6,
+      "collateralRate": 3.8,
+      "riskSpread": 11.1,
+      "expectedReturn": 12.5,
+      "coupon": "SOFR + 11.10%",
+      "quoteValidity": "15 min",
+      "triggerSettlement": "7\u201324 days",
+      "annualEL": 2.4,
+      "uwELRateCalc": 2.18,
+      "returnCalc": 12.5,
+      "termMonths": 36,
+      "elapsed": 9,
+      "remaining": 27,
+      "remainingEL": 5.161999999999997,
+      "totalEL": 7.199999999999999,
+      "seasonalTotal": 7.199999999999996,
+      "currentValue": 0,
+      "bidCalc": 98.4,
+      "askCalc": 99.1,
+      "minimumCalc": 250000,
+      "historyDates": []
+    },
+    {
+      "key": "srp1-equity",
+      "assetType": "SRP",
+      "poolKey": "srp1",
+      "note": "SRP 1 Equity",
+      "treaty": "SRP-CAWF-2026-A \u00b7 Residual",
+      "tranche": "Equity",
+      "rating": "Unrated",
+      "owned": false,
+      "investment": 0,
+      "heldAmount": 0,
+      "tradeUnit": "units",
+      "price": 9.65,
+      "bid": 9.35,
+      "ask": 9.9,
+      "available": 600000,
+      "minimum": 25000,
+      "originalBalance": 8000000,
+      "currentBalance": 8000000,
+      "attachmentPct": 0,
+      "detachmentPct": 16,
+      "subordinationPct": 0,
+      "currentELRate": 7.6,
+      "uwELRate": 6.85,
+      "impairmentProbability": 18.4,
+      "collateralRate": 3.8,
+      "riskSpread": 25.1,
+      "expectedReturn": 21.3,
+      "coupon": "Residual cash flow",
+      "quoteValidity": "15 min",
+      "triggerSettlement": "7\u201324 days",
+      "navPerUnit": 9.72,
+      "annualEL": 7.6,
+      "uwELRateCalc": 6.85,
+      "returnCalc": 21.3,
+      "termMonths": 36,
+      "elapsed": 9,
+      "remaining": 27,
+      "remainingEL": 16.34633333333333,
+      "totalEL": 22.799999999999997,
+      "seasonalTotal": 22.799999999999997,
+      "currentValue": 0,
+      "bidCalc": 9.35,
+      "askCalc": 9.9,
+      "minimumCalc": 25000,
+      "historyDates": []
+    },
+    {
+      "key": "srp2-senior",
+      "assetType": "SRP",
+      "poolKey": "srp2",
+      "note": "SRP 2 Senior",
+      "treaty": "SRP-CAWF-2026-B \u00b7 Class A",
+      "tranche": "Senior",
+      "rating": "A- (demo)",
+      "owned": false,
+      "investment": 0,
+      "heldAmount": 0,
+      "tradeUnit": "notional",
+      "price": 99.7,
+      "bid": 99.52,
+      "ask": 99.88,
+      "available": 7500000,
+      "minimum": 500000,
+      "originalBalance": 28000000,
+      "currentBalance": 28000000,
+      "attachmentPct": 44,
+      "detachmentPct": 100,
+      "subordinationPct": 44,
+      "currentELRate": 0.62,
+      "uwELRate": 0.55,
+      "impairmentProbability": 1.3,
+      "collateralRate": 3.8,
+      "riskSpread": 4.7,
+      "expectedReturn": 7.88,
+      "coupon": "SOFR + 4.70%",
+      "quoteValidity": "15 min",
+      "triggerSettlement": "9\u201324 days",
+      "annualEL": 0.62,
+      "uwELRateCalc": 0.55,
+      "returnCalc": 7.88,
+      "termMonths": 30,
+      "elapsed": 6,
+      "remaining": 24,
+      "remainingEL": 1.2399999999999998,
+      "totalEL": 1.55,
+      "seasonalTotal": 1.7530499999999998,
+      "currentValue": 0,
+      "bidCalc": 99.52,
+      "askCalc": 99.88,
+      "minimumCalc": 500000,
+      "historyDates": []
+    },
+    {
+      "key": "srp2-junior",
+      "assetType": "SRP",
+      "poolKey": "srp2",
+      "note": "SRP 2 Junior",
+      "treaty": "SRP-CAWF-2026-B \u00b7 Class B",
+      "tranche": "Junior",
+      "rating": "B+ (demo)",
+      "owned": true,
+      "investment": 2700000,
+      "heldAmount": 2700000,
+      "tradeUnit": "notional",
+      "price": 97.85,
+      "bid": 97.5,
+      "ask": 98.2,
+      "available": 3200000,
+      "minimum": 250000,
+      "originalBalance": 13000000,
+      "currentBalance": 13000000,
+      "attachmentPct": 18,
+      "detachmentPct": 44,
+      "subordinationPct": 18,
+      "currentELRate": 3.85,
+      "uwELRate": 3.25,
+      "impairmentProbability": 8.9,
+      "collateralRate": 3.8,
+      "riskSpread": 14.2,
+      "expectedReturn": 14.15,
+      "coupon": "SOFR + 14.20%",
+      "quoteValidity": "15 min",
+      "triggerSettlement": "9\u201324 days",
+      "annualEL": 3.85,
+      "uwELRateCalc": 3.25,
+      "returnCalc": 14.15,
+      "termMonths": 30,
+      "elapsed": 6,
+      "remaining": 24,
+      "remainingEL": 7.7,
+      "totalEL": 9.625,
+      "seasonalTotal": 10.885874999999999,
+      "currentValue": 2641949.9999999995,
+      "bidCalc": 97.5,
+      "askCalc": 98.2,
+      "minimumCalc": 250000,
+      "historyDates": []
+    },
+    {
+      "key": "srp2-equity",
+      "assetType": "SRP",
+      "poolKey": "srp2",
+      "note": "SRP 2 Equity",
+      "treaty": "SRP-CAWF-2026-B \u00b7 Residual",
+      "tranche": "Equity",
+      "rating": "Unrated",
+      "owned": false,
+      "investment": 0,
+      "heldAmount": 0,
+      "tradeUnit": "units",
+      "price": 8.9,
+      "bid": 8.55,
+      "ask": 9.25,
+      "available": 720000,
+      "minimum": 25000,
+      "originalBalance": 9000000,
+      "currentBalance": 9000000,
+      "attachmentPct": 0,
+      "detachmentPct": 18,
+      "subordinationPct": 0,
+      "currentELRate": 9.25,
+      "uwELRate": 8.1,
+      "impairmentProbability": 24.6,
+      "collateralRate": 3.8,
+      "riskSpread": 29.4,
+      "expectedReturn": 23.95,
+      "coupon": "Residual cash flow",
+      "quoteValidity": "15 min",
+      "triggerSettlement": "9\u201324 days",
+      "navPerUnit": 9.08,
+      "annualEL": 9.25,
+      "uwELRateCalc": 8.1,
+      "returnCalc": 23.95,
+      "termMonths": 30,
+      "elapsed": 6,
+      "remaining": 24,
+      "remainingEL": 18.5,
+      "totalEL": 23.125,
+      "seasonalTotal": 26.154375,
+      "currentValue": 0,
+      "bidCalc": 8.55,
+      "askCalc": 9.25,
+      "minimumCalc": 25000,
+      "historyDates": []
+    }
+  ],
+  "pools": [
+    {
+      "key": "srp1",
+      "collateralPar": 50000000,
+      "collateralMV": 49709000,
+      "assetValue": 51539000,
+      "navPct": 99.418,
+      "currentELValue": 1236000,
+      "currentELRate": 2.472,
+      "underwritingELRate": 2.188,
+      "expectedReturn": 9.782,
+      "tests": [
+        {
+          "name": "Senior collateral coverage",
+          "current": "127.4%",
+          "required": "\u2265 115.0%",
+          "cushion": "+12.4 pts",
+          "status": "Pass"
+        },
+        {
+          "name": "Senior protection",
+          "current": "40.0%",
+          "required": "\u2265 35.0%",
+          "cushion": "+5.0 pts",
+          "status": "Pass"
+        },
+        {
+          "name": "Pool expected loss",
+          "current": "2.47%",
+          "required": "\u2264 4.00%",
+          "cushion": "1.53 pts",
+          "status": "Pass"
+        },
+        {
+          "name": "Geographic concentration",
+          "current": "28.0%",
+          "required": "\u2264 35.0%",
+          "cushion": "7.0 pts",
+          "status": "Pass"
+        },
+        {
+          "name": "Carrier / program concentration",
+          "current": "28.0%",
+          "required": "\u2264 35.0%",
+          "cushion": "7.0 pts",
+          "status": "Pass"
+        },
+        {
+          "name": "Event-loss reserve",
+          "current": "$850K",
+          "required": "\u2265 $750K",
+          "cushion": "+$100K",
+          "status": "Pass"
+        }
+      ],
+      "historyLastNAV": 99.42,
+      "historyLastEL": 2.47,
+      "historyNAVDate": "2026-09-01",
+      "historyELDate": "2026-10-01",
+      "trancheReturnDollars": 5334000,
+      "trancheWeightedReturn": 10.668,
+      "trancheLossDollars": 1001000,
+      "lossGap": 235000,
+      "returnGap": 443000,
+      "seniorOCPar": 166.66666666666666,
+      "seniorOCMarket": 165.69666666666666,
+      "seniorOCAssets": 171.79666666666665,
+      "debtCoupons": 4022999.999999999,
+      "underlyingGross": 6127000,
+      "equityResidualBeforeFees": 2104000.000000001,
+      "stress": {
+        "srp1-equity": 7600000,
+        "srp1-junior": 0,
+        "srp1-senior": 0
+      },
+      "underlying": [
+        {
+          "key": "srn1",
+          "notional": 12000000,
+          "damage": 11800000,
+          "payout": 0,
+          "poolSharePayout": 0
+        },
+        {
+          "key": "srn3",
+          "notional": 8000000,
+          "damage": 0,
+          "payout": 0,
+          "poolSharePayout": 0
+        },
+        {
+          "key": "srn4",
+          "notional": 10000000,
+          "damage": 0,
+          "payout": 0,
+          "poolSharePayout": 0
+        },
+        {
+          "key": "srn5",
+          "notional": 14000000,
+          "damage": 28600000,
+          "payout": 16600000,
+          "poolSharePayout": 5810000
+        },
+        {
+          "key": "srn6",
+          "notional": 6000000,
+          "damage": 6800000,
+          "payout": 0,
+          "poolSharePayout": 0
+        }
+      ]
+    },
+    {
+      "key": "srp2",
+      "collateralPar": 50000000,
+      "collateralMV": 49624000,
+      "assetValue": 51434000,
+      "navPct": 99.248,
+      "currentELValue": 1529100,
+      "currentELRate": 3.0582,
+      "underwritingELRate": 2.8656,
+      "expectedReturn": 11.3926,
+      "tests": [
+        {
+          "name": "Senior collateral coverage",
+          "current": "119.2%",
+          "required": "\u2265 112.0%",
+          "cushion": "+7.2 pts",
+          "status": "Pass"
+        },
+        {
+          "name": "Senior protection",
+          "current": "44.0%",
+          "required": "\u2265 38.0%",
+          "cushion": "+6.0 pts",
+          "status": "Pass"
+        },
+        {
+          "name": "Pool expected loss",
+          "current": "3.06%",
+          "required": "\u2264 4.25%",
+          "cushion": "1.19 pts",
+          "status": "Watch"
+        },
+        {
+          "name": "Geographic concentration",
+          "current": "26.0%",
+          "required": "\u2264 30.0%",
+          "cushion": "4.0 pts",
+          "status": "Watch"
+        },
+        {
+          "name": "Carrier / program concentration",
+          "current": "26.0%",
+          "required": "\u2264 30.0%",
+          "cushion": "4.0 pts",
+          "status": "Pass"
+        },
+        {
+          "name": "Event-loss reserve",
+          "current": "$1.05M",
+          "required": "\u2265 $900K",
+          "cushion": "+$150K",
+          "status": "Pass"
+        }
+      ],
+      "historyLastNAV": 99.25,
+      "historyLastEL": 3.06,
+      "historyNAVDate": "2026-09-01",
+      "historyELDate": "2026-10-01",
+      "trancheReturnDollars": 6201400,
+      "trancheWeightedReturn": 12.4028,
+      "trancheLossDollars": 1506600,
+      "lossGap": 22500,
+      "returnGap": 505100,
+      "seniorOCPar": 178.57142857142858,
+      "seniorOCMarket": 177.22857142857143,
+      "seniorOCAssets": 183.69285714285715,
+      "debtCoupons": 4720000,
+      "underlyingGross": 7225400,
+      "equityResidualBeforeFees": 2505400,
+      "stress": {
+        "srp2-equity": 9000000,
+        "srp2-junior": 3500000,
+        "srp2-senior": 0
+      },
+      "underlying": [
+        {
+          "key": "srn2",
+          "notional": 12000000,
+          "damage": 18400000,
+          "payout": 9400000,
+          "poolSharePayout": 3760000
+        },
+        {
+          "key": "srn4",
+          "notional": 10000000,
+          "damage": 0,
+          "payout": 0,
+          "poolSharePayout": 0
+        },
+        {
+          "key": "srn5",
+          "notional": 13000000,
+          "damage": 28600000,
+          "payout": 16600000,
+          "poolSharePayout": 5395000
+        },
+        {
+          "key": "srn7",
+          "notional": 10000000,
+          "damage": 14200000,
+          "payout": 4200000,
+          "poolSharePayout": 933333.3333333334
+        },
+        {
+          "key": "srn8",
+          "notional": 5000000,
+          "damage": 0,
+          "payout": 0,
+          "poolSharePayout": 0
+        }
+      ]
+    }
+  ],
+  "portfolio": {
+    "invested": 23200000,
+    "currentValue": 23045250,
+    "weightedEL": 2.406170707629555,
+    "weightedReturn": 10.306924268558596,
+    "capitalStillInTerm": 14853235,
+    "nominalRemainingExpectedLoss": 764256
+  },
+  "events": [
+    {
+      "key": "srn1",
+      "exposure": 64148126.99999999,
+      "exposedCells": 216,
+      "burnedExposed": 36,
+      "burnedShare": 0.16666666666666666,
+      "severity": 0.535,
+      "index": 0.18341666666666667,
+      "damage": 11765835.627249999,
+      "payout": 0,
+      "cellDamage": 8085198.435141966,
+      "poolDamage": 11800000,
+      "stats": {
+        "cells": 4221800,
+        "blocks": 168872,
+        "byClass": [
+          {
+            "cells": 1890425,
+            "exposed": 0,
+            "burned": 183243,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 758003,
+            "exposed": 216,
+            "burned": 150017,
+            "burnedExposed": 36,
+            "exposure": 64148126.99999999,
+            "expInBurn": 10075933.000000004,
+            "loss": 8085198.435141966
+          },
+          {
+            "cells": 800150,
+            "exposed": 0,
+            "burned": 10694,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 31213,
+            "exposed": 0,
+            "burned": 2599,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 352434,
+            "exposed": 0,
+            "burned": 30665,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 389575,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          }
+        ],
+        "byDins": [
+          {
+            "cells": 4221764,
+            "exposure": 54072193.99999997,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 3,
+            "exposure": 902016,
+            "loss": 422596.7194954648
+          },
+          {
+            "cells": 33,
+            "exposure": 9173917,
+            "loss": 7662601.715646502
+          }
+        ],
+        "totalExposure": 64148126.99999999,
+        "exposedCells": 216,
+        "burnedCells": 377218,
+        "burnedExposed": 36,
+        "exposureInBurn": 10075933.000000004,
+        "loss": 8085198.435141966,
+        "structures": 729,
+        "structBurned": 8,
+        "structDestroyed": 8,
+        "structValue": 894872734,
+        "structLoss": 8085198.435141968
+      }
+    },
+    {
+      "key": "srn2",
+      "exposure": 45816646.00000002,
+      "exposedCells": 172,
+      "burnedExposed": 40,
+      "burnedShare": 0.23255813953488372,
+      "severity": 0.77,
+      "index": 0.2751744186046512,
+      "damage": 12607568.925465124,
+      "payout": 3607568.9254651237,
+      "cellDamage": 6684486.786184643,
+      "poolDamage": 18400000,
+      "stats": {
+        "cells": 4221800,
+        "blocks": 168872,
+        "byClass": [
+          {
+            "cells": 1890425,
+            "exposed": 0,
+            "burned": 183243,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 758003,
+            "exposed": 172,
+            "burned": 150017,
+            "burnedExposed": 40,
+            "exposure": 45816646.00000002,
+            "expInBurn": 10495488.999999998,
+            "loss": 6684486.786184643
+          },
+          {
+            "cells": 800150,
+            "exposed": 0,
+            "burned": 10694,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 31213,
+            "exposed": 0,
+            "burned": 2599,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 352434,
+            "exposed": 0,
+            "burned": 30665,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 389575,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          }
+        ],
+        "byDins": [
+          {
+            "cells": 4221760,
+            "exposure": 35321157.000000015,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 3,
+            "exposure": 1054431.75,
+            "loss": 222348.16094194137
+          },
+          {
+            "cells": 6,
+            "exposure": 1846595.0000000002,
+            "loss": 743834.849498596
+          },
+          {
+            "cells": 31,
+            "exposure": 7594462.250000003,
+            "loss": 5718303.775744106
+          }
+        ],
+        "totalExposure": 45816646.00000002,
+        "exposedCells": 172,
+        "burnedCells": 377218,
+        "burnedExposed": 40,
+        "exposureInBurn": 10495488.999999998,
+        "loss": 6684486.786184643,
+        "structures": 729,
+        "structBurned": 9,
+        "structDestroyed": 8,
+        "structValue": 894872734,
+        "structLoss": 6684486.786184642
+      }
+    },
+    {
+      "key": "srn3",
+      "exposure": 117596947.00000001,
+      "exposedCells": 438,
+      "burnedExposed": 0,
+      "burnedShare": 0,
+      "severity": 0,
+      "index": 0,
+      "damage": 0,
+      "payout": 0,
+      "cellDamage": 0,
+      "poolDamage": 0,
+      "stats": {
+        "cells": 2109300,
+        "blocks": 84372,
+        "byClass": [
+          {
+            "cells": 537100,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 1179069,
+            "exposed": 438,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 117596947.00000001,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 142452,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 250679,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          }
+        ],
+        "byDins": [
+          {
+            "cells": 2109300,
+            "exposure": 117596947.00000001,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          }
+        ],
+        "totalExposure": 117596947.00000001,
+        "exposedCells": 438,
+        "burnedCells": 0,
+        "burnedExposed": 0,
+        "exposureInBurn": 0,
+        "loss": 0,
+        "structures": 729,
+        "structBurned": 0,
+        "structDestroyed": 0,
+        "structValue": 926255899,
+        "structLoss": 0
+      }
+    },
+    {
+      "key": "srn4",
+      "exposure": 164781684.99999994,
+      "exposedCells": 626,
+      "burnedExposed": 0,
+      "burnedShare": 0,
+      "severity": 0,
+      "index": 0,
+      "damage": 0,
+      "payout": 0,
+      "cellDamage": 0,
+      "poolDamage": 0,
+      "stats": {
+        "cells": 3475425,
+        "blocks": 139017,
+        "byClass": [
+          {
+            "cells": 491925,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 2449761,
+            "exposed": 626,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 164781684.99999994,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 67816,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 465923,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          }
+        ],
+        "byDins": [
+          {
+            "cells": 3475425,
+            "exposure": 164781684.99999994,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          }
+        ],
+        "totalExposure": 164781684.99999994,
+        "exposedCells": 626,
+        "burnedCells": 0,
+        "burnedExposed": 0,
+        "exposureInBurn": 0,
+        "loss": 0,
+        "structures": 729,
+        "structBurned": 0,
+        "structDestroyed": 0,
+        "structValue": 913495779,
+        "structLoss": 0
+      }
+    },
+    {
+      "key": "srn5",
+      "exposure": 205851779.0000001,
+      "exposedCells": 764,
+      "burnedExposed": 368,
+      "burnedShare": 0.4816753926701571,
+      "severity": 0.835,
+      "index": 0.48117408376963355,
+      "damage": 99050541.15267414,
+      "payout": 40000000,
+      "cellDamage": 70033299.40636636,
+      "poolDamage": 28600000,
+      "stats": {
+        "cells": 6308100,
+        "blocks": 252324,
+        "byClass": [
+          {
+            "cells": 178400,
+            "exposed": 0,
+            "burned": 96647,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 5039163,
+            "exposed": 764,
+            "burned": 2487054,
+            "burnedExposed": 368,
+            "exposure": 205851779.0000001,
+            "expInBurn": 100870459,
+            "loss": 70033299.40636636
+          },
+          {
+            "cells": 138397,
+            "exposed": 0,
+            "burned": 10025,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 952140,
+            "exposed": 0,
+            "burned": 454008,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposed": 0,
+            "burned": 0,
+            "burnedExposed": 0,
+            "exposure": 0,
+            "expInBurn": 0,
+            "loss": 0
+          }
+        ],
+        "byDins": [
+          {
+            "cells": 6307732,
+            "exposure": 104981319.99999985,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 0,
+            "exposure": 0,
+            "loss": 0
+          },
+          {
+            "cells": 78,
+            "exposure": 20921045.41666666,
+            "loss": 8648622.668275496
+          },
+          {
+            "cells": 290,
+            "exposure": 79949413.58333328,
+            "loss": 61384676.73809082
+          }
+        ],
+        "totalExposure": 205851779.0000001,
+        "exposedCells": 764,
+        "burnedCells": 3047734,
+        "burnedExposed": 368,
+        "exposureInBurn": 100870459,
+        "loss": 70033299.40636636,
+        "structures": 729,
+        "structBurned": 81,
+        "structDestroyed": 71,
+        "structValue": 887824309,
+        "structLoss": 70033299.40636635
+      }
+    }
+  ],
+  "auditMetadata": {
+    "reviewDate": "2026-09-24",
+    "sourcePath": "/Users/kiyan/Documents/GitHub/Euclid-Demo/euclid-loss-determination.html",
+    "sourceSHA256": "998a722eaade8959b52d389cc13d5f2d0122c029a193f6887bf6ed90ce0d186f",
+    "scope": "Synthetic-data arithmetic and consistency review; not actuarial or market validation."
+  }
+}

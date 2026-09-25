@@ -1,0 +1,37 @@
+[
+  {
+    "region": "berkeley",
+    "source": "https://services5.arcgis.com/ROBnTHSNjoZ2Wm1P/arcgis/rest/services/Parcels/FeatureServer/0",
+    "parcels": 2739
+  },
+  {
+    "region": "millvalley",
+    "source": "https://services5.arcgis.com/wXYNaciObHUosEnt/arcgis/rest/services/Marin_County_Parcel/FeatureServer/0",
+    "parcels": 1537
+  },
+  {
+    "region": "truckee",
+    "source": "https://maps.nevadacountyca.gov/arcgis/rest/services/web_public/parcel_address_sdevw/MapServer/0",
+    "parcels": 1401
+  },
+  {
+    "region": "losangeles",
+    "source": "https://cache.gis.lacounty.gov/cache/rest/services/LACounty_Cache/LACounty_Parcel/FeatureServer/0",
+    "parcels": 360
+  },
+  {
+    "region": "napa",
+    "source": "https://services1.arcgis.com/Ko5rxt00spOfjMqj/arcgis/rest/services/Napa_County_Public_Parcels/FeatureServer/1",
+    "parcels": 376
+  },
+  {
+    "region": "sandiego",
+    "source": "https://gis-public.sandiegocounty.gov/arcgis/rest/services/LAFCO/parcels/MapServer/0",
+    "parcels": 837
+  },
+  {
+    "region": "ventura",
+    "source": "https://maps.ventura.org/arcgis/rest/services/DataDownloads/CommonData/MapServer/2",
+    "parcels": 1011
+  }
+]
