@@ -2,6 +2,8 @@
 
 The production hostname is `https://app.euclidrisk.com`.
 
+The checked-in `wrangler.toml` identifies this as a Cloudflare Pages project named `euclid-risk-app` and points Pages at the generated `dist` directory.
+
 ## Build settings
 
 - Framework preset: None
@@ -15,7 +17,7 @@ The build copies `euclid-loss-determination.html` to `dist/index.html`, so the c
 ## Deploy
 
 1. Create a Cloudflare Pages project named `euclid-risk-app` and connect this repository.
-2. Apply the build settings above and run the first deployment.
+2. Apply the build settings above and run the first deployment. Cloudflare will also read the matching settings from `wrangler.toml`.
 3. In **Workers & Pages → euclid-risk-app → Custom domains**, add `app.euclidrisk.com`.
 4. If `euclidrisk.com` is already on Cloudflare DNS, allow Pages to create the DNS record. Otherwise follow Cloudflare's displayed CNAME verification steps.
 5. Verify `https://app.euclidrisk.com`, all three SRN selections, the map tiles, login/logout, and response security headers.

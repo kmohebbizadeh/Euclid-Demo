@@ -1,0 +1,4 @@
+name = "euclid-risk-app"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-08-29"
+send_metrics = false

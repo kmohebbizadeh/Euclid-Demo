@@ -9,6 +9,9 @@ mkdir -p "$OUTPUT_DIR/assets"
 
 cp "$PROJECT_DIR/euclid-loss-determination.html" "$OUTPUT_DIR/index.html"
 cp "$PROJECT_DIR/assets/euclid-logo.png" "$OUTPUT_DIR/assets/euclid-logo.png"
+cp "$PROJECT_DIR/assets/property-data.js" "$OUTPUT_DIR/assets/property-data.js"
+cp "$PROJECT_DIR/assets/property-map.js" "$OUTPUT_DIR/assets/property-map.js"
+cp "$PROJECT_DIR/assets/portfolio-overview.js" "$OUTPUT_DIR/assets/portfolio-overview.js"
 cp "$PROJECT_DIR/_headers" "$OUTPUT_DIR/_headers"
 cp "$PROJECT_DIR/robots.txt" "$OUTPUT_DIR/robots.txt"
 
