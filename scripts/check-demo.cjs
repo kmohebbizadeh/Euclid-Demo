@@ -82,3 +82,9 @@ run("PORTFOLIO_FILTER={kind:'note',value:'srn1'}");assert.ok(run('matchesPortfol
 run("PORTFOLIO_FILTER={kind:'allocation',value:'Cash'}");assert.ok(!run('matchesPortfolioFilter(PORTFOLIOS.srn1)'));
 run('PORTFOLIO_FILTER=null');
 console.log('PASS: overview value and allocation conservation; look-through totals; projection limits; direct and pool filters');
+const berkeley=run('EUCLID_PROPERTY_DATA.regions.berkeley.features'), bPoints=new Map(berkeley.map(f=>[f.properties.parcelId,f.properties.point]));
+const fair=run('EUCLID_PROPERTY_DATA.notes.srn1.holdings'),state=run('EUCLID_PROPERTY_DATA.notes.srn2.holdings'),fairIds=new Set(fair.map(p=>p.parcelId));
+assert.ok(state.every(p=>!fairIds.has(p.parcelId)));
+const northShare=rows=>rows.filter(p=>bPoints.get(p.parcelId)[1]>=37.87).length/rows.length;
+assert.ok(northShare(state)>northShare(fair)+.4);
+console.log('PASS: distinct Berkeley carrier books and geographic concentrations');
