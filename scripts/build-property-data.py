@@ -73,7 +73,21 @@ for region in REGIONS:
  manifest.append({'region':region,'source':source,'parcels':len(features)})
 notes={}
 for key,region,sample,severity in NOTES:
- features=regions[region]['features'];selected=[f for f in features if fraction(key+':'+f['properties']['parcelId'])<sample]
+ features=regions[region]['features']
+ if region=='berkeley':
+  # Distinct illustrative carrier books: FAIR Plan concentrates on southern
+  # hillside parcels; State Farm concentrates on northern/lower neighborhoods.
+  # A shared assignment key prevents the same parcel appearing in both books.
+  selected=[]
+  for f in features:
+   props=f['properties'];pid=props['parcelId'];x,y=props['point']
+   north=y>=37.87;hillside=x>=-122.247
+   fair_share=.25 if north else .72 if hillside else .45
+   owner='srn1' if fraction('berkeley-carrier:'+pid)<fair_share else 'srn2'
+   probability=(.9 if hillside and not north else .06 if north else .18) if key=='srn1' else (.55 if north else .6 if hillside else .10)
+   if owner==key and fraction(key+':'+pid)<probability:selected.append(f)
+ else:
+  selected=[f for f in features if fraction(key+':'+f['properties']['parcelId'])<sample]
  if len(selected)<50:selected=sorted(features,key=lambda f:fraction(key+':'+f['properties']['parcelId']))[:min(50,len(features))]
  ring=BERKELEY if key in ['srn1','srn2'] else LA if key=='srn5' else NAPA if key=='srn6' else SD if key=='srn7' else None
  records=[]
